@@ -1,5 +1,7 @@
 package crypto;
 
+import java.util.function.DoubleToIntFunction;
+
 import static crypto.Helper.cleanString;
 import static crypto.Helper.stringToBytes;
 import static crypto.Helper.bytesToString;
@@ -17,7 +19,7 @@ public class Main {
 	public static void main(String args[]) {
 		
 		
-		String inputMessage = Helper.readStringFromFile("text_one.txt");
+		/*String inputMessage = Helper.readStringFromFile("text_one.txt");
 		String key = "2cF%5";
 		
 		String messageClean = cleanString(inputMessage);
@@ -28,13 +30,13 @@ public class Main {
 		
 		
 		System.out.println("Original input sanitized : " + messageClean);
-		System.out.println();
+		System.out.println();*/
 		
-		System.out.println("------Caesar------");
-		testCaesar(messageBytes, keyBytes[0]);
+		//System.out.println("------Caesar------");
+		//testCaesar(messageBytes, keyBytes[0]);
+
 		
 		// TODO: TO BE COMPLETED
-		
 		
 	}
 	
@@ -43,6 +45,7 @@ public class Main {
 	public static void testCaesar(byte[] string , byte key) {
 		//Encoding
 		byte[] result = Encrypt.caesar(string, key);
+		System.out.println(result);
 		String s = bytesToString(result);
 		System.out.println("Encoded : " + s);
 		
