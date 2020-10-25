@@ -199,6 +199,7 @@ public class Encrypt {
 		/**
 		 * PAS ENCORE FAITE
 		 */
+		int b = 1;
 		byte[] cipherText = new byte[plainText.length];
 		byte[] newPad = new byte[iv.length];
 		int a = 0;
