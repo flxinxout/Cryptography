@@ -5,35 +5,59 @@ import java.util.Random;
 import static crypto.Helper.*;
 
 public class Encrypt {
-	
+
 	public static final int CAESAR = 0;
 	public static final int VIGENERE = 1;
 	public static final int XOR = 2;
 	public static final int ONETIME = 3;
-	public static final int CBC = 4; 
-	
+	public static final int CBC = 4;
+
 	public static final byte SPACE = 32;
-	
+
 	final static Random rand = new Random();
-	
+
 	//-----------------------General-------------------------
-	
+
 	/**
 	 * General method to encode a message using a key, you can choose the method you want to use to encode.
 	 * @param message the message to encode already cleaned
 	 * @param key the key used to encode
 	 * @param type the method used to encode : 0 = Caesar, 1 = Vigenere, 2 = XOR, 3 = One time pad, 4 = CBC
-	 * 
+	 *
 	 * @return an encoded String
 	 * if the method is called with an unknown type of algorithm, it returns the original message
 	 */
 	public static String encrypt(String message, String key, int type) {
 		// TODO: COMPLETE THIS METHOD
-		
-		return null; // TODO: to be modified
+		byte[] plainText = Helper.stringToBytes(message);
+		byte[] byteKey = Helper.stringToBytes(key);
+
+		byte[] result = null;
+		String codedMessage = new String();
+
+		if (type == CAESAR) { result = caesar(plainText, byteKey[0]); }
+
+		if (type == VIGENERE) { result = vigenere(plainText, byteKey); }
+
+		if (type == XOR) { result = xor(plainText, byteKey[0]); }
+
+		if (type == ONETIME) { result = oneTimePad(plainText, byteKey); }
+
+		if (type == CBC) { result = cbc(plainText, byteKey); }
+
+		if (result != null){
+			codedMessage = Helper.bytesToString(result);
+		}
+		else{
+			codedMessage = message;
+		}
+
+		return codedMessage;
+		//return null; // TODO: to be modified
 	}
 	
-	
+
+
 	//-----------------------Caesar-------------------------
 	
 	/**
@@ -51,12 +75,10 @@ public class Encrypt {
 		byte[] cipherText = new byte[plainText.length];
 
 		for(int i = 0; i < plainText.length; ++i) {
-			if(plainText[i] == 32) {
-				cipherText[i] = 32;
-				System.out.println(cipherText[i]);
+			if(plainText[i] == SPACE) {
+				cipherText[i] = SPACE;
 			} else {
 				cipherText[i] = (byte) (plainText[i] + key);
-				System.out.println(cipherText[i]);
 			}
 		}
 		
@@ -75,7 +97,9 @@ public class Encrypt {
 		// TODO: COMPLETE THIS METHOD
 		return caesar(plainText, key, false); // TODO: to be modified
 	}
-	
+
+
+
 	//-----------------------XOR-------------------------
 	
 	/**
@@ -91,12 +115,10 @@ public class Encrypt {
 		byte[] cipherText = new byte[plainText.length];
 
 		for(int i = 0; i < plainText.length; ++i) {
-			if(plainText[i] == 32) {
-				cipherText[i] = 32;
-				System.out.println(cipherText[i]);
+			if(plainText[i] == SPACE) {
+				cipherText[i] = SPACE;
 			} else {
 				cipherText[i] = (byte) (plainText[i] ^ key);
-				System.out.println(cipherText[i]);
 			}
 		}
 
@@ -112,6 +134,9 @@ public class Encrypt {
 		// TODO: COMPLETE THIS METHOD
 		return xor(plainText, key, false); // TODO: to be modified
 	}
+
+
+
 	//-----------------------Vigenere-------------------------
 	
 	/**
@@ -127,18 +152,14 @@ public class Encrypt {
 		// TODO: COMPLETE THIS METHOD
 
 		byte[] cipherText = new byte[plainText.length];
-		int a = 0;
+		int currentKey = 0;
 		for(int i = 0; i < plainText.length; ++i) {
-			if(plainText[i] == 32) {
-				System.out.println(plainText[i] + " " + keyword[a] + " " + a);
-				cipherText[i] = 32;
-				System.out.println(cipherText[i]);
+			if(plainText[i] == SPACE) {
+				cipherText[i] = SPACE;
 			} else {
-				if(a >= keyword.length) a = 0;
-				System.out.println(plainText[i] + " " + keyword[a] + " " + a);
-				cipherText[i] = (byte) (plainText[i] + keyword[a]);
-				System.out.println(cipherText[i]);
-				a++;
+				cipherText[i] = (byte) (plainText[i] + keyword[currentKey]);
+				currentKey++;
+				if(currentKey >= keyword.length) currentKey = 0;
 			}
 		}
 
@@ -196,28 +217,52 @@ public class Encrypt {
 	 */
 	public static byte[] cbc(byte[] plainText, byte[] iv) {
 		// TODO: COMPLETE THIS METHOD
-		/**
-		 * PAS ENCORE FAITE
-		 */
-		int b = 1;
+		int blockSize = iv.length;
+		int blocksNumber = plainText.length / blockSize + 1;
 		byte[] cipherText = new byte[plainText.length];
-		byte[] newPad = new byte[iv.length];
-		int a = 0;
 
-		for(int i = 0; i < plainText.length; i++) {
-			if(a <= iv.length) {
-				cipherText[i] = (byte) (plainText[i] ^ iv[a]);
-				newPad[i] = cipherText[i];
-				a++;
-				if(a == iv.length) a = 0;
-			} else {
-				cipherText[i] = (byte) (plainText[i] ^ newPad[a]);
-				iv[i] = cipherText[i];
-				a++;
+		for (int i = 0; i < blocksNumber; i++) {
+			if ((i + 1) * blockSize > plainText.length) {
+				blockSize = plainText.length - i * blockSize;
+			}
+
+			byte[] partPlainText = new byte[blockSize];
+
+			for (int j = i * blockSize; j < ((i + 1) * blockSize); j++) {
+				cipherText[j] = (byte) (plainText[j] ^ iv[j - (i * blockSize)]);
+
+				System.out.println(cipherText[j]);
+				//Faut-il créer un pad temporaire ou c'est ok de modifier le iv?
+				iv[j - (i * blockSize)] = cipherText[j];
 			}
 		}
-		
+
+		return cipherText;
+
+		//Si je me trompe pas cette version du code est plus nulle
+		/*
+		int blockSize = iv.length;
+		int currentPosition = 0;
+		byte[] cipherText = new byte[plainText.length];
+
+		for (int i = 0; i < (plainText.length / blockSize); ++i) {
+
+			if (currentPosition + blockSize > plainText.length) {
+				blockSize = plainText.length - currentPosition;
+			}
+
+			for(int j = currentPosition; j < blockSize + currentPosition; ++j) {
+				cipherText[j] = (byte) (plainText[j] ^ iv[j - currentPosition]);
+			}
+
+			for (int k = currentPosition; k < blockSize + currentPosition; ++k) {
+				iv[k - currentPosition] = cipherText[k];
+			}
+
+			currentPosition += blockSize;
+		}
 		return cipherText; // TODO: to be modified
+		 */
 	}
 	
 	
@@ -228,9 +273,18 @@ public class Encrypt {
 	 */
 	public static byte[] generatePad(int size) {
 		// TODO: COMPLETE THIS METHOD
-
-		return null; // TODO: to be modified
-
+		if (size > 0){
+			byte[] pad = new byte[size];
+			for (int i = 0; i < size; i++) {
+				Random r = new Random();
+				int value = r.nextInt();
+				pad[i] = (byte) value;
+			}
+			return pad;
+		}
+		else{
+			return null; // TODO: to be modified
+		}
 	}
 	
 	

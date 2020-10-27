@@ -19,7 +19,7 @@ public class Main {
 	public static void main(String args[]) {
 		
 		
-		/*String inputMessage = Helper.readStringFromFile("text_one.txt");
+		String inputMessage = Helper.readStringFromFile("text_one.txt");
 		String key = "2cF%5";
 		
 		String messageClean = cleanString(inputMessage);
@@ -30,17 +30,36 @@ public class Main {
 		
 		
 		System.out.println("Original input sanitized : " + messageClean);
-		System.out.println();*/
+		System.out.println();
 		
-		//System.out.println("------Caesar------");
-		//testCaesar(messageBytes, keyBytes[0]);
+		/*System.out.println("------Caesar------");
+		testCaesar(messageBytes, (byte) 1);*/
 
-		
+		//System.out.println("------Vigenere------");
+		//Encrypt.vigenere(messageBytes, keyBytes);
+
+		/*System.out.println("------CBC------");
+		testCbc(messageBytes, keyBytes);*/
+
+		//Fonction générale pour print le message avec n'importe quelle technique
+		System.out.println(Encrypt.encrypt(messageClean, key, 0));
+		System.out.println(Encrypt.encrypt(messageClean, key, 1));
+		System.out.println(Encrypt.encrypt(messageClean, key, 2));
+		System.out.println(Encrypt.encrypt(messageClean, key, 3));
+
 		// TODO: TO BE COMPLETED
 		
 	}
-	
-	
+
+	//Run the Encoding and Decoding using the cbc pattern
+	public static void testCbc(byte[] string , byte[] iv) {
+		//Encoding
+		byte[] result = Encrypt.cbc(string, iv);
+		System.out.println(result);
+		String s = bytesToString(result);
+		System.out.println("Encoded : " + s);
+	}
+
 	//Run the Encoding and Decoding using the caesar pattern 
 	public static void testCaesar(byte[] string , byte key) {
 		//Encoding
@@ -49,7 +68,7 @@ public class Main {
 		String s = bytesToString(result);
 		System.out.println("Encoded : " + s);
 		
-		//Decoding with key
+		/*//Decoding with key
 		String sD = bytesToString(Encrypt.caesar(result, (byte) (-key)));
 		System.out.println("Decoded knowing the key : " + sD);
 		
@@ -60,7 +79,7 @@ public class Main {
 		
 		byte decodingKey = Decrypt.caesarWithFrequencies(result);
 		String sFD = bytesToString(Encrypt.caesar(result, decodingKey));
-		System.out.println("Decoded without knowing the key : " + sFD);
+		System.out.println("Decoded without knowing the key : " + sFD);*/
 	}
 	
 //TODO : TO BE COMPLETED
