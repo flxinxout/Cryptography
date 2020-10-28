@@ -36,8 +36,17 @@ public class Decrypt {
 	 */
 	public static String arrayToString(byte[][] bruteForceResult) {
 		//TODO : COMPLETE THIS METHOD
+		String message = "";
+		for(int row = 0; row < bruteForceResult.length; ++row) {
+			byte[] byteRow = new byte[bruteForceResult[row].length];
+			for(int letter = 0; letter < bruteForceResult[row].length; ++letter) {
+				byteRow[letter] = bruteForceResult[row][letter];
+			}
+			message += Helper.bytesToString(byteRow);
+			message += System.lineSeparator();
+		}
 		
-		return null; //TODO: to be modified
+		return message; //TODO: to be modified
 	}
 	
 	
@@ -51,8 +60,16 @@ public class Decrypt {
 	 */
 	public static byte[][] caesarBruteForce(byte[] cipher) {
 		//TODO : COMPLETE THIS METHOD
+		byte[][] decodedText = new byte[ALPHABETSIZE][cipher.length];
 
-		return null; //TODO: to be modified
+		for(int i = 1; i < ALPHABETSIZE; i++) {
+			for(int j = 0; j < cipher.length; j++) {
+				decodedText[i-1][j] = Encrypt.caesar(cipher, (byte) i)[j];
+			}
+		}
+		System.out.println(arrayToString(decodedText));
+
+		return decodedText; //TODO: to be modified
 	}	
 	
 	

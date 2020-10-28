@@ -41,15 +41,13 @@ public class Main {
 		/*System.out.println("------CBC------");
 		testCbc(messageBytes, keyBytes);*/
 
-		String message = "i want ";
+		String message = "j xbou";
+		System.out.println(message);
+		Decrypt.caesarBruteForce(Helper.stringToBytes(message));
 
-		byte[] b = {1};
-		byte[] c = {1, 2, 3, 4};
-		byte[] d = {1, 2, 3, 4, 1, 2, 3, 4};
-
-		//Fonction générale pour print le message avec n'importe quelle technique
+		/*Fonction générale pour print le message avec n'importe quelle technique
 		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(Encrypt.generatePad(1)),0));
-		/*System.out.println(Encrypt.encrypt(message, Helper.bytesToString(c), 1));
+		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(c), 1));
 		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(b), 2));
 		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(d), 3));
 		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(c), 4));*/
@@ -75,7 +73,7 @@ public class Main {
 		String s = bytesToString(result);
 		System.out.println("Encoded : " + s);
 		
-		/*//Decoding with key
+		/*Decoding with key
 		String sD = bytesToString(Encrypt.caesar(result, (byte) (-key)));
 		System.out.println("Decoded knowing the key : " + sD);
 		
