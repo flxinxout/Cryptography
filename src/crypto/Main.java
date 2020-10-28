@@ -19,18 +19,18 @@ public class Main {
 	public static void main(String args[]) {
 		
 		
-		String inputMessage = Helper.readStringFromFile("text_one.txt");
-		String key = "2cF%5";
+		//String inputMessage = Helper.readStringFromFile("text_one.txt");
+		//String key = "2cF%5";
 		
-		String messageClean = cleanString(inputMessage);
-		
-		
-		byte[] messageBytes = stringToBytes(messageClean);
-		byte[] keyBytes = stringToBytes(key);
+		//String messageClean = cleanString(inputMessage);
 		
 		
-		System.out.println("Original input sanitized : " + messageClean);
-		System.out.println();
+		//byte[] messageBytes = stringToBytes(messageClean);
+		//byte[] keyBytes = stringToBytes(key);
+		
+		
+		//System.out.println("Original input sanitized : " + messageClean);
+		//System.out.println();
 		
 		/*System.out.println("------Caesar------");
 		testCaesar(messageBytes, (byte) 1);*/
@@ -41,11 +41,18 @@ public class Main {
 		/*System.out.println("------CBC------");
 		testCbc(messageBytes, keyBytes);*/
 
+		String message = "i want ";
+
+		byte[] b = {1};
+		byte[] c = {1, 2, 3, 4};
+		byte[] d = {1, 2, 3, 4, 1, 2, 3, 4};
+
 		//Fonction générale pour print le message avec n'importe quelle technique
-		System.out.println(Encrypt.encrypt(messageClean, key, 0));
-		System.out.println(Encrypt.encrypt(messageClean, key, 1));
-		System.out.println(Encrypt.encrypt(messageClean, key, 2));
-		System.out.println(Encrypt.encrypt(messageClean, key, 3));
+		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(Encrypt.generatePad(1)),0));
+		/*System.out.println(Encrypt.encrypt(message, Helper.bytesToString(c), 1));
+		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(b), 2));
+		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(d), 3));
+		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(c), 4));*/
 
 		// TODO: TO BE COMPLETED
 		

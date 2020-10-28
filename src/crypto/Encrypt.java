@@ -52,8 +52,7 @@ public class Encrypt {
 			codedMessage = message;
 		}
 
-		return codedMessage;
-		//return null; // TODO: to be modified
+		return codedMessage; // TODO: to be modified
 	}
 	
 
@@ -218,51 +217,28 @@ public class Encrypt {
 	public static byte[] cbc(byte[] plainText, byte[] iv) {
 		// TODO: COMPLETE THIS METHOD
 		int blockSize = iv.length;
-		int blocksNumber = plainText.length / blockSize + 1;
+		int blocksNumber;
+		if(plainText.length % blockSize != 0) {
+			blocksNumber = plainText.length / blockSize + 1;
+		} else {
+			blocksNumber = plainText.length / blockSize;
+		}
 		byte[] cipherText = new byte[plainText.length];
 
-		for (int i = 0; i < blocksNumber; i++) {
+		for (int i = 0; i < blocksNumber; ++i) {
 			if ((i + 1) * blockSize > plainText.length) {
 				blockSize = plainText.length - i * blockSize;
 			}
 
-			byte[] partPlainText = new byte[blockSize];
-
-			for (int j = i * blockSize; j < ((i + 1) * blockSize); j++) {
+			for (int j = i * blockSize; j < ((i + 1) * blockSize); ++j) {
 				cipherText[j] = (byte) (plainText[j] ^ iv[j - (i * blockSize)]);
 
-				System.out.println(cipherText[j]);
 				//Faut-il créer un pad temporaire ou c'est ok de modifier le iv?
 				iv[j - (i * blockSize)] = cipherText[j];
 			}
 		}
 
 		return cipherText;
-
-		//Si je me trompe pas cette version du code est plus nulle
-		/*
-		int blockSize = iv.length;
-		int currentPosition = 0;
-		byte[] cipherText = new byte[plainText.length];
-
-		for (int i = 0; i < (plainText.length / blockSize); ++i) {
-
-			if (currentPosition + blockSize > plainText.length) {
-				blockSize = plainText.length - currentPosition;
-			}
-
-			for(int j = currentPosition; j < blockSize + currentPosition; ++j) {
-				cipherText[j] = (byte) (plainText[j] ^ iv[j - currentPosition]);
-			}
-
-			for (int k = currentPosition; k < blockSize + currentPosition; ++k) {
-				iv[k - currentPosition] = cipherText[k];
-			}
-
-			currentPosition += blockSize;
-		}
-		return cipherText; // TODO: to be modified
-		 */
 	}
 	
 	
@@ -275,9 +251,8 @@ public class Encrypt {
 		// TODO: COMPLETE THIS METHOD
 		if (size > 0){
 			byte[] pad = new byte[size];
-			for (int i = 0; i < size; i++) {
-				Random r = new Random();
-				int value = r.nextInt();
+			for (int i = 0; i < size; ++i) {
+				int value = rand.nextInt();
 				pad[i] = (byte) value;
 			}
 			return pad;
