@@ -41,9 +41,17 @@ public class Main {
 		/*System.out.println("------CBC------");
 		testCbc(messageBytes, keyBytes);*/
 
-		String message = "j xbou";
+		byte[] b = {50, 10};
+
+		String message = "i want";
 		System.out.println(message);
-		Decrypt.caesarBruteForce(Helper.stringToBytes(message));
+		String encrypted = Encrypt.encrypt(message, Helper.bytesToString(b), 4);
+		System.out.println("Encrypted : " + encrypted);
+
+		byte[] decrypted = Decrypt.decryptCBC(Helper.stringToBytes(encrypted), b);
+		System.out.println("Decrypted : " + Helper.bytesToString(decrypted));
+
+		//Decrypt.xorBruteForce(Helper.stringToBytes(Encrypt.encrypt(message, Helper.bytesToString(b), 2)));
 
 		/*Fonction générale pour print le message avec n'importe quelle technique
 		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(Encrypt.generatePad(1)),0));

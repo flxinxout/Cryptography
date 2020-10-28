@@ -67,7 +67,6 @@ public class Decrypt {
 				decodedText[i-1][j] = Encrypt.caesar(cipher, (byte) i)[j];
 			}
 		}
-		System.out.println(arrayToString(decodedText));
 
 		return decodedText; //TODO: to be modified
 	}	
@@ -117,8 +116,15 @@ public class Decrypt {
 	 */
 	public static byte[][] xorBruteForce(byte[] cipher) {
 		//TODO : COMPLETE THIS METHOD
+		byte[][] decodedText = new byte[ALPHABETSIZE][cipher.length];
 
-		return null; //TODO: to be modified
+		for(int i = 1; i < ALPHABETSIZE; i++) {
+			for(int j = 0; j < cipher.length; j++) {
+				decodedText[i-1][j] = Encrypt.xor(cipher, (byte) i)[j];
+			}
+		}
+
+		return decodedText; //TODO: to be modified
 	}
 	
 	
@@ -183,8 +189,31 @@ public class Decrypt {
 	 * @return the clear text
 	 */
 	public static byte[] decryptCBC(byte[] cipher, byte[] iv) {
-		//TODO : COMPLETE THIS METHOD	
-		return null; //TODO: to be modified
+		//TODO : COMPLETE THIS METHOD
+
+		int blockSize = iv.length;
+		int blocksNumber;
+		if(cipher.length % blockSize != 0) {
+			blocksNumber = cipher.length / blockSize + 1;
+		} else {
+			blocksNumber = cipher.length / blockSize;
+		}
+		byte[] plainText = new byte[cipher.length];
+
+		for (int i = 0; i < blocksNumber; ++i) {
+			if ((i + 1) * blockSize > cipher.length) {
+				blockSize = cipher.length - i * blockSize;
+			}
+
+			for (int j = i * blockSize; j < ((i + 1) * blockSize); ++j) {
+				plainText[j] = (byte) (cipher[j] ^ iv[j - (i * blockSize)]);
+
+				//Faut-il créer un pad temporaire ou c'est ok de modifier le iv?
+				iv[j - (i * blockSize)] = cipher[j];
+			}
+		}
+
+		return plainText; //TODO: to be modified
 	}
 	
 	
