@@ -17,45 +17,37 @@ public class Main {
 	
 	//---------------------------MAIN---------------------------
 	public static void main(String args[]) {
-		
-		
-		//String inputMessage = Helper.readStringFromFile("text_one.txt");
-		//String key = "2cF%5";
-		
-		//String messageClean = cleanString(inputMessage);
-		
-		
-		//byte[] messageBytes = stringToBytes(messageClean);
-		//byte[] keyBytes = stringToBytes(key);
-		
-		
-		//System.out.println("Original input sanitized : " + messageClean);
-		//System.out.println();
-		
-		/*System.out.println("------Caesar------");
-		testCaesar(messageBytes, (byte) 1);*/
 
-		//System.out.println("------Vigenere------");
-		//Encrypt.vigenere(messageBytes, keyBytes);
+		String inputMessage = Helper.readStringFromFile("text_one.txt");
+		String key = "2cF%5";
+		
+		String messageClean = cleanString(inputMessage);
 
-		/*System.out.println("------CBC------");
-		testCbc(messageBytes, keyBytes);*/
+		byte[] messageBytes = stringToBytes(messageClean);
+		byte[] keyBytes = stringToBytes(key);
+		
+		
+		System.out.println("Original input sanitized : " + messageClean);
+		System.out.println();
 
-		byte[] b = {1};
+		//--------------------------TEST CAESAR--------------------------
+		//testCaesar(messageBytes, (byte) 1);
 
-		String message = "i want i wanted";
+		//--------------------------TEST VIGENERE--------------------------
+		testVigenere(messageBytes, keyBytes);
+		/*String message = "i want"; //÷ ö i wanted
 		System.out.println(message);
 		String encrypted = Encrypt.encrypt(message, Helper.bytesToString(b), 1);
 		System.out.println("Encrypted : " + encrypted);
 
-		Decrypt.computeFrequencies(Helper.stringToBytes(Encrypt.encrypt(message, Helper.bytesToString(b), 1)));
+		Decrypt.computeFrequencies(Helper.stringToBytes(encrypted));
 
-		/*byte[] decrypted = Decrypt.decryptCBC(Helper.stringToBytes(encrypted), b);
-		System.out.println("Decrypted : " + Helper.bytesToString(decrypted));*/
+		byte[] decrypted = Decrypt.decryptCBC(Helper.stringToBytes(encrypted), b);
+		System.out.println("Decrypted : " + Helper.bytesToString(decrypted));
 
 		//Decrypt.xorBruteForce(Helper.stringToBytes(Encrypt.encrypt(message, Helper.bytesToString(b), 2)));
 
-		/*Fonction générale pour print le message avec n'importe quelle technique
+		Fonction générale pour print le message avec n'importe quelle technique
 		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(Encrypt.generatePad(1)),0));
 		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(c), 1));
 		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(b), 2));
@@ -63,27 +55,20 @@ public class Main {
 		System.out.println(Encrypt.encrypt(message, Helper.bytesToString(c), 4));*/
 
 		// TODO: TO BE COMPLETED
-		
-	}
-
-	//Run the Encoding and Decoding using the cbc pattern
-	public static void testCbc(byte[] string , byte[] iv) {
-		//Encoding
-		byte[] result = Encrypt.cbc(string, iv);
-		System.out.println(result);
-		String s = bytesToString(result);
-		System.out.println("Encoded : " + s);
+		/*byte[] test = { (byte) 161 };
+		System.out.println(Helper.bytesToString(test) + Helper.stringToBytes("¡")[0]);*/
 	}
 
 	//Run the Encoding and Decoding using the caesar pattern 
 	public static void testCaesar(byte[] string , byte key) {
+		System.out.println("------Caesar------");
+
 		//Encoding
 		byte[] result = Encrypt.caesar(string, key);
-		System.out.println(result);
 		String s = bytesToString(result);
 		System.out.println("Encoded : " + s);
 		
-		/*Decoding with key
+		//Decoding with key
 		String sD = bytesToString(Encrypt.caesar(result, (byte) (-key)));
 		System.out.println("Decoded knowing the key : " + sD);
 		
@@ -94,9 +79,27 @@ public class Main {
 		
 		byte decodingKey = Decrypt.caesarWithFrequencies(result);
 		String sFD = bytesToString(Encrypt.caesar(result, decodingKey));
+		System.out.println("Decoded without knowing the key : " + sFD);
+	}
+
+	//Run the Encoding and Decoding using the caesar pattern
+	public static void testVigenere(byte[] string , byte[] key) {
+		System.out.println("------Vigenere------");
+
+		//Encoding
+		byte[] result = Encrypt.vigenere(string, key);
+		String s = bytesToString(result);
+		System.out.println("Encoded : " + s);
+
+		/*//Decoding with key
+		String sD = bytesToString(Encrypt.vigenere(result, (byte) (-key)));
+		System.out.println("Decoded knowing the key : " + sD);*/
+
+		//Decoding without key
+		Decrypt.vigenereWithFrequencies(result);
+		/*String sFD = bytesToString(Decrypt.vigenereWithFrequencies(result));
 		System.out.println("Decoded without knowing the key : " + sFD);*/
 	}
-	
 //TODO : TO BE COMPLETED
 	
 }
