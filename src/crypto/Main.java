@@ -41,15 +41,17 @@ public class Main {
 		/*System.out.println("------CBC------");
 		testCbc(messageBytes, keyBytes);*/
 
-		byte[] b = {50, 10};
+		byte[] b = {1};
 
-		String message = "i want";
+		String message = "i want i wanted";
 		System.out.println(message);
-		String encrypted = Encrypt.encrypt(message, Helper.bytesToString(b), 4);
+		String encrypted = Encrypt.encrypt(message, Helper.bytesToString(b), 1);
 		System.out.println("Encrypted : " + encrypted);
 
-		byte[] decrypted = Decrypt.decryptCBC(Helper.stringToBytes(encrypted), b);
-		System.out.println("Decrypted : " + Helper.bytesToString(decrypted));
+		Decrypt.computeFrequencies(Helper.stringToBytes(Encrypt.encrypt(message, Helper.bytesToString(b), 1)));
+
+		/*byte[] decrypted = Decrypt.decryptCBC(Helper.stringToBytes(encrypted), b);
+		System.out.println("Decrypted : " + Helper.bytesToString(decrypted));*/
 
 		//Decrypt.xorBruteForce(Helper.stringToBytes(Encrypt.encrypt(message, Helper.bytesToString(b), 2)));
 

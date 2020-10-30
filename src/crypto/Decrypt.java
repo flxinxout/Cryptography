@@ -90,7 +90,49 @@ public class Decrypt {
 	 */
 	public static float[] computeFrequencies(byte[] cipherText) {
 		//TODO : COMPLETE THIS METHOD
-		return null; //TODO: to be modified
+
+		// Pas du tout sur de cette méthode car je suis pas sur d'avoir compris comment rempli le tableau
+
+		// entier provisoir
+		int n = 0;
+
+		// Integer pour voir le nombre de caractères différents de SPACE (32)
+		int caracterWithoutSpace = 0;
+
+		// le tableau
+		float[] caractersFrequencies = new float[ALPHABETSIZE];
+
+		// Boucle des bytes du tableau
+		for(int i = 0; i < cipherText.length; i++) {
+			// caractère à la i-ème position
+			byte caractere = cipherText[i];
+
+			if(caractere != 32) {
+				caracterWithoutSpace += 1;
+				// affectation += 1.0 à l'indice du tableau se rapportant au nombre byte qui lui est attribué par la convention
+				// + 128 car sinon indice négatif
+				caractersFrequencies[caractere + 128] += 1.0;
+			}
+		}
+
+		for(int i = 0; i < caractersFrequencies.length; i++) {
+			if(caractersFrequencies[i] != 0.0) {
+				caractersFrequencies[i] /= caracterWithoutSpace;
+			}
+		}
+
+		// A enlever après
+		for (int i = 0; i < caractersFrequencies.length; i++) {
+			System.out.println(caractersFrequencies[i]);
+			if(caractersFrequencies[i] != 0.0) {
+				n++;
+			}
+		}
+
+		System.out.println(n);
+		System.out.println(caracterWithoutSpace);
+
+		return caractersFrequencies; //TODO: to be modified
 	}
 	
 	
@@ -101,6 +143,38 @@ public class Decrypt {
 	 */
 	public static byte caesarFindKey(float[] charFrequencies) {
 		//TODO : COMPLETE THIS METHOD
+
+		// Le produit scalaire qui sera pris à la fin
+		double biggerProduitScalaire = 0.0;
+		// Le produit scalaire qui est comparé avec le plus grand
+		double temp = 0.0;
+		// Valeur de i + j pour les itérations
+		int k;
+		// Indice à recupérer quand le produit scalaire est le plus grand
+		int l = 0;
+
+		for(int i = 0; i < charFrequencies.length; i++) {
+			for(int j = 0; j < ENGLISHFREQUENCIES.length; j++) {
+				k = (i + j);
+				if(k > 255) {
+					k -= 256;
+				}
+				temp += ENGLISHFREQUENCIES[j] * charFrequencies[k];
+			}
+			if(temp > biggerProduitScalaire) { // supérieur ou égal ???
+				biggerProduitScalaire = temp;
+				l = i;
+			}
+		}
+
+		byte caractereDuDecalage = (byte) l;
+
+		/*
+		TODO JARRIVE PAS A FAIRE LA DISTANCE COMME IL LE DISE DANS LE PDF
+		 */
+
+		//byte distance = l - 97;
+
 		return -1; //TODO: to be modified
 	}
 	
