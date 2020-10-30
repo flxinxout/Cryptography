@@ -293,9 +293,9 @@ public class Decrypt {
 
 		//Iterates through the cipher array and add the coincidences to their array
 		for (int shift = 1; shift < cipher.size(); ++shift) {
-			for (int i = shift; i < cipher.size() - shift; ++i) {
+			for (int i = shift - 1; i < cipher.size() - shift; ++i) {
 				if (cipher.get(i) == cipher.get(i + shift)){
-					coincidences[shift] += 1;
+					coincidences[shift-1] += 1;
 				}
 			}
 		}
@@ -316,10 +316,10 @@ public class Decrypt {
 	 * @param coincidences the array representing the coincidences in the encoded text
 	 * @return the length of the key
 	 */
-	public static ArrayList<Integer> vigenereFindPotentialKeyLength(int[] coincidences) {
+	public static List<Integer> vigenereFindPotentialKeyLength(int[] coincidences) {
 		//TODO : COMPLETE THIS METHOD
-		//ArrayList containing the indexes of the maxima
-		ArrayList<Integer> maximaIndex = new ArrayList<Integer>();
+		//List containing the indexes of the maxima
+		List<Integer> maximaIndex = new ArrayList<>();
 
 		//Check the two first elements of the list
 		if (coincidences[0] > coincidences[1] && coincidences[0] > coincidences[2]){
@@ -411,7 +411,6 @@ public class Decrypt {
 	
 	
 	//-----------------------Basic CBC-------------------------
-	
 	/**
 	 * Method used to decode a String encoded following the CBC pattern
 	 * @param cipher the byte array representing the encoded text
