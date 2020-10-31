@@ -31,7 +31,7 @@ public class Main {
 		System.out.println();
 
 		//--------------------------TEST CAESAR--------------------------
-		//testCaesar(messageBytes, (byte) 1);
+		testCaesar(messageBytes, (byte) 50);
 
 		//--------------------------TEST VIGENERE--------------------------
 		testVigenere(messageBytes, keyBytes);
@@ -83,9 +83,11 @@ public class Main {
 	}
 
 	//Run the Encoding and Decoding using the caesar pattern
-	public static void testVigenere(byte[] string , byte[] key) {
+	public static void testVigenere(byte[] string, byte[] key) {
 		System.out.println("------Vigenere------");
 
+		//byte[] key = {1,2,3};
+		//string = Helper.stringToBytes("i want to be a better man because i'm proud of you you're amazing");
 		//Encoding
 		byte[] result = Encrypt.vigenere(string, key);
 		String s = bytesToString(result);
@@ -97,8 +99,8 @@ public class Main {
 
 		//Decoding without key
 		Decrypt.vigenereWithFrequencies(result);
-		/*String sFD = bytesToString(Decrypt.vigenereWithFrequencies(result));
-		System.out.println("Decoded without knowing the key : " + sFD);*/
+		String sFD = bytesToString(Decrypt.vigenereWithFrequencies(result));
+		System.out.println("Decoded without knowing the key : " + sFD);
 	}
 //TODO : TO BE COMPLETED
 	

@@ -154,12 +154,14 @@ public class Decrypt {
 	public static byte caesarFindKey(float[] charFrequencies) {
 		//TODO : COMPLETE THIS METHOD
 		double maxScalProd = 0.0;
-		double scalProd = 0.0;
+		double scalProd;
 		int maxIndex = 0;
 
 		//Compute the scalar products
-		for(int cipher = 0; cipher < charFrequencies.length; cipher++) {
-			for(int english = 0; english < ENGLISHFREQUENCIES.length; english++) {
+		for(int cipher = 0; cipher < charFrequencies.length; ++cipher) {
+			scalProd = 0;
+
+			for(int english = 0; english < ENGLISHFREQUENCIES.length; ++english) {
 
 				//Last index (in cipher) of the current comparison
 				int sum = (cipher + english);
@@ -180,8 +182,8 @@ public class Decrypt {
 		/* The key used to encrypt the message: the distance between the maxIndex
 		 * (which corresponds to "a" in the cipher frequence table) and
 		 * the byte number for a (97) */
-		byte key = (byte) (maxIndex - 97);
-		return key; //TODO: to be modified
+		byte key = (byte) (maxIndex - 96);
+		return (byte) -key; //TODO: to be modified
 	}
 	
 	
@@ -219,27 +221,12 @@ public class Decrypt {
 		//TODO : COMPLETE THIS METHOD
 		List<Byte> cleanedText = removeSpaces(cipher);
 
-		//############ A SUPPRIMER ##########
-		byte[] cleanedArray = new byte[cleanedText.size()];
-		for (int i = 0; i < cleanedText.size(); i++) {
-			cleanedArray[i] = cleanedText.get(i);
-		}
-		System.out.println("No space : " + Helper.bytesToString(cleanedArray));
-		//###################################
-
 		int keyLength = vigenereFindKeyLength(cleanedText);
-
-		//############ A SUPPRIMER ##########
-		System.out.println("Key length : " + keyLength);
-		//###################################
 
 		byte[] key = vigenereFindKey(cleanedText, keyLength);
 
-		//############ A SUPPRIMER ##########
-		System.out.println("Key : " + Helper.bytesToString(key));
-		//###################################
-
-		return null; //TODO: to be modified
+		byte[] plainText = Encrypt.vigenere(cipher, key);
+		return plainText; //TODO: to be modified
 	}
 	
 
@@ -269,11 +256,11 @@ public class Decrypt {
 	 */
 	public static int vigenereFindKeyLength(List<Byte> cipher) {
 		//TODO : COMPLETE THIS METHOD
-		int[] coincidences = vigenereFindCoincidences(cipher);
+		int[] coincidences = findCoincidences(cipher);
 
-		ArrayList<Integer> potentialKeyLengths = vigenereFindPotentialKeyLength(coincidences);
+		List<Integer> potentialKeyLengths = findPotentialKeyLength(coincidences);
 
-		return vigenereGetKeyLength(potentialKeyLengths); //TODO: to be modified
+		return getKeyLength(potentialKeyLengths); //TODO: to be modified
 	}
 
 
@@ -283,7 +270,7 @@ public class Decrypt {
 	 * @param cipher the byte array representing the encoded text without space
 	 * @return an array of the coincidences in the encoded text
 	 */
-	public static int[] vigenereFindCoincidences(List<Byte> cipher) {
+	public static int[] findCoincidences(List<Byte> cipher) {
 		//TODO : COMPLETE THIS METHOD
 
 		/* Array that stores the number of coincidences for each shift. Its indexes
@@ -300,12 +287,6 @@ public class Decrypt {
 			}
 		}
 
-		//############ A SUPPRIMER ##########
-		for (int i = 0; i < coincidences.length; i++) {
-			System.out.println(coincidences[i]);
-		}
-		//###################################
-
 		return coincidences; //TODO: to be modified
 	}
 
@@ -316,7 +297,7 @@ public class Decrypt {
 	 * @param coincidences the array representing the coincidences in the encoded text
 	 * @return the length of the key
 	 */
-	public static List<Integer> vigenereFindPotentialKeyLength(int[] coincidences) {
+	public static List<Integer> findPotentialKeyLength(int[] coincidences) {
 		//TODO : COMPLETE THIS METHOD
 		//List containing the indexes of the maxima
 		List<Integer> maximaIndex = new ArrayList<>();
@@ -348,13 +329,10 @@ public class Decrypt {
 	 * @param maximaIndex the array representing the maximaIndex of coincidences
 	 * @return the length of the key
 	 */
-	public static int vigenereGetKeyLength(ArrayList<Integer> maximaIndex) {
+	public static int getKeyLength(List<Integer> maximaIndex) {
 		//TODO : COMPLETE THIS METHOD
 		//Map: Key: distances, Values: occurrences
 		Map<Integer, Integer> distances = new HashMap<>();
-
-		//Key size to return
-		int keySize = 0;
 
 		//Add the distances to the map and map them to their value (number of occurences)
 		for (int i = 0; i < maximaIndex.size() - 1; ++i) {
@@ -369,13 +347,19 @@ public class Decrypt {
 		}
 
 		//Set the key size to the greatest number of occurences
+
+		int keyLength = 0;
+		//Keep track of the greatest occurence of a key
+		int maxOccurence = 0;
+
 		for (int key : distances.keySet()) {
-			if (distances.get(key) > keySize){
-				keySize = distances.get(key);
+			if (distances.get(key) > maxOccurence){
+				maxOccurence = distances.get(key);
+				keyLength = key;
 			}
 		}
 
-		return keySize; //TODO: to be modified
+		return keyLength; //TODO: to be modified
 	}
 
 
@@ -388,22 +372,24 @@ public class Decrypt {
 	 */
 	public static byte[] vigenereFindKey(List<Byte> cipher, int keyLength) {
 		//TODO : COMPLETE THIS METHOD
-
 		byte[] key = new byte[keyLength];
 
 		for (int i = 0; i < keyLength; i++) {
+			//DIRECTEMENT UN ARRAY? COMMENT SAVOIR SA TAILLE?
 			List<Byte> part = new ArrayList<>();
-			for (int j = 0; j < cipher.size(); j += keyLength) {
+			for (int j = i; j < cipher.size(); j += keyLength) {
 				part.add(cipher.get(j));
 			}
 
+			//C'EST PAS LA MEILLEURE TECHNIQUE JE PENSE, A REFAIRE PEUT-ETRE
+			//Convert from list to array
 			byte[] arrayPart = new byte[part.size()];
 			for (int j = 0; j < part.size(); j++) {
 				arrayPart[j] = part.get(j);
 			}
 
-			byte thisKey = caesarWithFrequencies(arrayPart);
-			key[i] = thisKey;
+			byte thisKey = (byte) -caesarWithFrequencies(arrayPart);
+			key[i] = (byte) -thisKey;
 		}
 
 		return key; //TODO: to be modified
