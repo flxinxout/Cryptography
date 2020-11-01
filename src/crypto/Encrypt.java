@@ -33,7 +33,7 @@ public class Encrypt {
 		byte[] byteKey = Helper.stringToBytes(key);
 
 		byte[] result = null;
-		String codedMessage = new String();
+		String codedMessage = "";
 
 		if (type == CAESAR) { result = caesar(plainText, byteKey[0]); }
 
