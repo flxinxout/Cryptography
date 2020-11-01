@@ -12,7 +12,9 @@ import java.util.Map;
 public class Decrypt {
 
 	public static final int ALPHABETSIZE = Byte.MAX_VALUE - Byte.MIN_VALUE + 1 ; //256
-	public static final int APOSITION = 97 + ALPHABETSIZE/2;
+	public static final int CAESAR = 0;
+	public static final int VIGENERE = 1;
+	public static final int XOR = 2;
 	public static final byte SPACE = 32;
 
 	//source : https://en.wikipedia.org/wiki/Letter_frequency
@@ -26,30 +28,24 @@ public class Decrypt {
 	 */
 	public static String breakCipher(String cipher, int type) {
 		//TODO : COMPLETE THIS METHOD
-
 		byte[] cipherByte = Helper.stringToBytes(cipher);
-		byte key;
-		byte[] keyArray;
-		byte[][] keyArray2Dimension;
 		String result = "";
 
-		switch (type) {
-			case 0:
-				key = caesarWithFrequencies(cipherByte);
-				byte[] temp = {key};
-				result = Helper.bytesToString(temp);
-				break;
-
-			case 1:
-				keyArray = vigenereWithFrequencies(cipherByte);
-				result = Helper.bytesToString(keyArray);
-				break;
-
-			case 2:
-				keyArray2Dimension = xorBruteForce(cipherByte);
-				result = arrayToString(keyArray2Dimension);
+		if (type == CAESAR) {
+			byte key = caesarWithFrequencies(cipherByte);
+			byte[] byteResult = Encrypt.caesar(cipherByte, key);
+			result = Helper.bytesToString(byteResult);
 		}
-		
+		else if (type == VIGENERE){
+			byte[] byteResult = vigenereWithFrequencies(cipherByte);
+			result = Helper.bytesToString(byteResult);
+		}
+		else if (type == XOR){
+			byte[][] bruteForceResult = xorBruteForce(cipherByte);
+			result = Decrypt.arrayToString(bruteForceResult);
+		}
+		else{ result = cipher; }
+
 		return result; //TODO: to be modified
 	}
 	
@@ -63,6 +59,7 @@ public class Decrypt {
 		String message = "";
 		for(int row = 0; row < bruteForceResult.length; ++row) {
 			byte[] byteRow = new byte[bruteForceResult[row].length];
+
 			for(int letter = 0; letter < bruteForceResult[row].length; ++letter) {
 				byteRow[letter] = bruteForceResult[row][letter];
 			}
@@ -104,8 +101,7 @@ public class Decrypt {
 		//TODO : COMPLETE THIS METHOD
 		float[] frequencies = computeFrequencies(cipherText);
 
-		byte key = caesarFindKey(frequencies);
-		return key; //TODO: to be modified
+		return caesarFindKey(frequencies); //TODO: to be modified
 	}
 
 
@@ -117,7 +113,6 @@ public class Decrypt {
 	public static float[] computeFrequencies(byte[] cipherText) {
 		//TODO : COMPLETE THIS METHOD
 		int charactersWithoutSpace = 0;
-
 		float[] charactersFrequencies = new float[ALPHABETSIZE];
 
 		//Check how many times each character (except space) does appear in the cipher text
@@ -205,8 +200,7 @@ public class Decrypt {
 		/* The key used to encrypt the message: the distance between the maxIndex
 		 * (which corresponds to "a" in the cipher frequence table) and
 		 * the byte number for a (97) */
-		byte key = (byte) (maxIndex - 96);
-		return (byte) -key; //TODO: to be modified
+		return (byte) -(maxIndex - 96); //TODO: to be modified
 	}
 	
 	
@@ -229,8 +223,7 @@ public class Decrypt {
 
 		return decodedText; //TODO: to be modified
 	}
-	
-	
+
 	
 	//-----------------------Vigenere-------------------------
 	// Algorithm : see  https://www.youtube.com/watch?v=LaWp_Kq0cKs	
@@ -248,8 +241,7 @@ public class Decrypt {
 
 		byte[] key = vigenereFindKey(cleanedText, keyLength);
 
-		byte[] plainText = Encrypt.vigenere(cipher, key);
-		return plainText; //TODO: to be modified
+		return Encrypt.vigenere(cipher, key); //TODO: to be modified
 	}
 	
 
@@ -359,25 +351,23 @@ public class Decrypt {
 
 		//Add the distances to the map and map them to their value (number of occurences)
 		for (int i = 0; i < maximaIndex.size() - 1; ++i) {
-			int distance = maximaIndex.get(i + 1) - maximaIndex.get(i);
+			int thisDistance = maximaIndex.get(i + 1) - maximaIndex.get(i);
 
-			if(!distances.containsKey(distance)){
-				distances.put(distance, 1);
+			if(!distances.containsKey(thisDistance)){
+				distances.put(thisDistance, 1);
 			}
 			else{
-				distances.replace(distance, (distances.get(distance) + 1));
+				distances.replace(thisDistance, (distances.get(thisDistance) + 1));
 			}
 		}
 
-		//Set the key size to the greatest number of occurences
-
+		//Set the key size to the greatest number of occurrences
 		int keyLength = 0;
-		//Keep track of the greatest occurence of a key
-		int maxOccurence = 0;
+		int maxOccurrence = 0;
 
 		for (int key : distances.keySet()) {
-			if (distances.get(key) > maxOccurence){
-				maxOccurence = distances.get(key);
+			if (distances.get(key) > maxOccurrence){
+				maxOccurrence = distances.get(key);
 				keyLength = key;
 			}
 		}
@@ -411,8 +401,8 @@ public class Decrypt {
 				arrayPart[j] = part.get(j);
 			}
 
-			byte thisKey = (byte) -caesarWithFrequencies(arrayPart);
-			key[i] = (byte) -thisKey;
+			byte thisKey = caesarWithFrequencies(arrayPart);
+			key[i] = thisKey;
 		}
 
 		return key; //TODO: to be modified
@@ -428,26 +418,28 @@ public class Decrypt {
 	 */
 	public static byte[] decryptCBC(byte[] cipher, byte[] iv) {
 		//TODO : COMPLETE THIS METHOD
-
 		int blockSize = iv.length;
 		int blocksNumber;
+
+		//Compute the number of blocks
 		if(cipher.length % blockSize != 0) {
 			blocksNumber = cipher.length / blockSize + 1;
 		} else {
 			blocksNumber = cipher.length / blockSize;
 		}
-		byte[] plainText = new byte[cipher.length];
 
-		for (int i = 0; i < blocksNumber; ++i) {
-			if ((i + 1) * blockSize > cipher.length) {
-				blockSize = cipher.length - i * blockSize;
+		//Fill the plain text block by block
+		byte[] plainText = new byte[cipher.length];
+		for (int currentBlock = 0; currentBlock < blocksNumber; ++currentBlock) {
+			if ((currentBlock + 1) * blockSize > cipher.length) {
+				blockSize = cipher.length - currentBlock * blockSize;
 			}
 
-			for (int j = i * blockSize; j < ((i + 1) * blockSize); ++j) {
-				plainText[j] = (byte) (cipher[j] ^ iv[j - (i * blockSize)]);
+			for (int i = currentBlock * blockSize; i < ((currentBlock + 1) * blockSize); ++i) {
+				plainText[i] = (byte) (cipher[i] ^ iv[i - (currentBlock * blockSize)]);
 
 				//Faut-il créer un pad temporaire ou c'est ok de modifier le iv?
-				iv[j - (i * blockSize)] = cipher[j];
+				iv[i - (currentBlock * blockSize)] = cipher[i];
 			}
 		}
 
