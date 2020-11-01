@@ -26,8 +26,31 @@ public class Decrypt {
 	 */
 	public static String breakCipher(String cipher, int type) {
 		//TODO : COMPLETE THIS METHOD
+
+		byte[] cipherByte = Helper.stringToBytes(cipher);
+		byte key;
+		byte[] keyArray;
+		byte[][] keyArray2Dimension;
+		String result = "";
+
+		switch (type) {
+			case 0:
+				key = caesarWithFrequencies(cipherByte);
+				byte[] temp = {key};
+				result = Helper.bytesToString(temp);
+				break;
+
+			case 1:
+				keyArray = vigenereWithFrequencies(cipherByte);
+				result = Helper.bytesToString(keyArray);
+				break;
+
+			case 2:
+				keyArray2Dimension = xorBruteForce(cipherByte);
+				result = arrayToString(keyArray2Dimension);
+		}
 		
-		return null; //TODO: to be modified
+		return result; //TODO: to be modified
 	}
 	
 	
@@ -104,7 +127,7 @@ public class Decrypt {
 			if(character != SPACE) {
 				charactersWithoutSpace += 1;
 
-				if (character > 0 && character < 127){
+				if (character >= 0 && character <= 127){
 					charactersFrequencies[character] += 1.0;
 				} else{
 					charactersFrequencies[character + 255] += 1.0;
