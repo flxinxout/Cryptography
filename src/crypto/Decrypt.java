@@ -241,7 +241,6 @@ public class Decrypt {
 
 		byte[] key = vigenereFindKey(cleanedText, keyLength);
 
-		System.out.println("Key : " + bytesToString(key));
 		return Encrypt.vigenere(cipher, key); //TODO: to be modified
 	}
 	
@@ -420,12 +419,13 @@ public class Decrypt {
 	public static byte[] decryptCBC(byte[] cipher, byte[] iv) {
 		//TODO : COMPLETE THIS METHOD
 		int blockSize = iv.length;
+		int lastBlockSize = 5;
 		int blocksNumber;
-		byte[] newPad = new byte[blockSize];
 
-		// Fill new pad to have a new adress
+		// Fill the new pad to have a new adress
+		byte[] copyPad = new byte[blockSize];
 		for (int i = 0; i < blockSize; i++) {
-			newPad[i] = iv[i];
+			copyPad[i] = iv[i];
 		}
 
 		//Compute the number of blocks
@@ -438,14 +438,14 @@ public class Decrypt {
 		//Fill the plain text block by block
 		byte[] plainText = new byte[cipher.length];
 		for (int currentBlock = 0; currentBlock < blocksNumber; ++currentBlock) {
-			if ((currentBlock + 1) * blockSize > cipher.length) {
-				blockSize = cipher.length - currentBlock * blockSize;
+			if (cipher.length % blockSize != 0 && (currentBlock + 1) * blockSize > cipher.length) {
+				lastBlockSize = cipher.length - currentBlock * blockSize;
 			}
 
-			for (int i = currentBlock * blockSize; i < ((currentBlock + 1) * blockSize); ++i) {
-				plainText[i] = (byte) (cipher[i] ^ newPad[i - (currentBlock * blockSize)]);
+			for (int i = currentBlock * blockSize; i < (currentBlock + 1) * blockSize - (blockSize - lastBlockSize); ++i) {
+				plainText[i] = (byte) (cipher[i] ^ copyPad[i - (currentBlock * blockSize)]);
 
-				newPad[i - (currentBlock * blockSize)] = cipher[i];
+				copyPad[i - (currentBlock * blockSize)] = cipher[i];
 			}
 		}
 

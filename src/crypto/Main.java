@@ -13,33 +13,29 @@ import static crypto.Helper.bytesToString;
  * Bonus: CBC with encryption, shell
  */
 public class Main {
-	
-	
-	//---------------------------MAIN---------------------------
 	public static void main(String args[]) {
 
-		String inputMessage = Helper.readStringFromFile("text_one.txt");
-		String key = "2cF%5";
-		
-		String messageClean = cleanString(inputMessage);
+		//----------------- DECLARATION DES MESSAGES ET CLES -----------------------
+		String message1 = Helper.readStringFromFile("text_one.txt");
+		String key1 = "2cF%5";
+
+		//------------------------TESTS COMPLETS----------------------------
+		System.out.println("-------------------- TEST NO 1 --------------------");
+		overallGeneralTest(message1, key1);
+
+		System.out.println("-------------------- TEST NO 2 --------------------");
+		overallGeneralTest(message1, key1);
+		// TODO: TO BE COMPLETED
+	}
+
+	public static void overallGeneralTest(String message, String key){
+		String messageClean = cleanString(message);
 
 		byte[] messageBytes = stringToBytes(messageClean);
 		byte[] keyBytes = stringToBytes(key);
-		
-		System.out.println("Original input sanitized : " + messageClean);
-		System.out.println();
 
-		//------------------------TEST COMPLET----------------------------
-		/*String inputMessage = "i want some cheese motherfucker because I'm going to kick your ass";
-		String messageClean = cleanString(inputMessage);
-		byte[] messageBytes = stringToBytes(messageClean);
-		byte[] keyBytes = stringToBytes(key);*/
-
-		// CBC
-		byte[] c = Encrypt.cbc(messageBytes, keyBytes);
-		System.out.println(Helper.bytesToString(Encrypt.cbc(messageBytes, keyBytes)));
-		System.out.println(Helper.bytesToString(Decrypt.decryptCBC(c, keyBytes)));
-		testCBC(messageBytes, keyBytes);
+		System.out.println("Original message sanitized : " + messageClean);
+		System.out.println("Original key : " + key);
 		System.out.println();
 
 		// CAESAR
@@ -50,8 +46,8 @@ public class Main {
 		testVigenere(messageBytes, keyBytes);
 		System.out.println();
 
-		// XOR
-		/*testXOR(messageBytes, keyBytes[0]);
+		/*// XOR
+		testXOR(messageBytes, keyBytes[0]);
 		System.out.println();*/
 
 		// ONE TIME PAD
@@ -66,32 +62,37 @@ public class Main {
 		testBreakCipher(Helper.bytesToString(Encrypt.caesar(messageBytes, keyBytes[0])), 0);
 		testBreakCipher(Helper.bytesToString(Encrypt.vigenere(messageBytes, keyBytes)), 1);
 		//testBreakCipher(Helper.bytesToString(Encrypt.xor(messageBytes, keyBytes[0])), 2);
-		testBreakCipher(inputMessage, 3);
+		testBreakCipher(Helper.bytesToString(Encrypt.vigenere(messageBytes, keyBytes)), 3);
 
-		// TODO: TO BE COMPLETED
+		System.out.println();
+		System.out.println();
+
 	}
 
-	//Run the Encoding and Decoding using the caesar pattern
+	//Run the Encoding and Decoding using the caesar, vigenere or XOR pattern
 	public static void testBreakCipher(String cipher, int type) {
 		String plainText = Decrypt.breakCipher(cipher, type);
 
+		System.out.println("------ Break cipher method ------ ");
+
 		if (type == 0){
-			System.out.println("------Decrypted using Caesar and frequencies method ------ ");
+			System.out.println("CAESAR WITH FREQUENCIES");
 			System.out.println(plainText);
 			System.out.println();
 		}
 		else if(type == 1){
-			System.out.println("------ Decrypted using Vigenere and frequencies method ------ ");
+			System.out.println("VIGENERE WITH FREQUENCIES");
 			System.out.println(plainText);
 			System.out.println();
 		}
 		else if(type == 2){
-			System.out.println("------ Decrypted using XOR and brute force method ------");
+			System.out.println("XOR BRUTE FORCE");
 			System.out.println(plainText);
 			System.out.println();
 		}
 		else{
-			System.out.println("------ The desired type isn't recognised: 0 = Caesar, 1 = Vigenere, 2 = XOR ------");
+			System.out.println("ERROR: the desired type isn't recognised: 0 = Caesar, 1 = Vigenere, 2 = XOR");
+			System.out.println(plainText);
 			System.out.println();
 		}
 	}
@@ -123,7 +124,7 @@ public class Main {
 	}
 
 
-	//Run the Encoding and Decoding using the caesar pattern
+	//Run the Encoding and Decoding using the vigenere pattern
 	public static void testVigenere(byte[] string, byte[] key) {
 		System.out.println("------Vigenere------");
 
@@ -139,7 +140,7 @@ public class Main {
 	}
 
 
-	//Run the Encoding and Decoding using the caesar pattern
+	//Run the Encoding and Decoding using the XOR pattern
 	public static void testXOR(byte[] string, byte key) {
 		System.out.println("------XOR------");
 
@@ -155,7 +156,7 @@ public class Main {
 		System.out.println(sDA);
 	}
 
-	//Run the Encoding and Decoding using the caesar pattern
+	//Run the Encoding and Decoding using the One Time Pad pattern
 	public static void testOneTime(byte[] string) {
 		System.out.println("------One Time Pad------");
 
@@ -168,7 +169,7 @@ public class Main {
 		System.out.println(s);
 	}
 
-	//Run the Encoding and Decoding using the caesar pattern
+	//Run the Encoding and Decoding using the CBC pattern
 	public static void testCBC(byte[] string, byte[] iv) {
 		System.out.println("------CBC------");
 

@@ -1,8 +1,6 @@
 package crypto;
 
-import javax.swing.*;
 import java.util.Random;
-import static crypto.Helper.*;
 
 public class Encrypt {
 
@@ -217,32 +215,33 @@ public class Encrypt {
 	public static byte[] cbc(byte[] plainText, byte[] iv) {
 		// TODO: COMPLETE THIS METHOD
 		int blockSize = iv.length;
+		int lastBlockSize = 5;
 		int blocksNumber;
 
-		byte[] newPad = new byte[blockSize];
-
-		// Fill new pad to have a new adress
+		// Fill new pad to have a new address
+		byte[] copyPad = new byte[blockSize];
 		for (int i = 0; i < blockSize; i++) {
-			newPad[i] = iv[i];
+			copyPad[i] = iv[i];
 		}
 
+		//Compute blocks number
 		if(plainText.length % blockSize != 0) {
 			blocksNumber = plainText.length / blockSize + 1;
 		} else {
 			blocksNumber = plainText.length / blockSize;
 		}
 
+		//Fill the cipher text block by block
 		byte[] cipherText = new byte[plainText.length];
-
-		for (int i = 0; i < blocksNumber; ++i) {
-			if ((i + 1) * blockSize > plainText.length) {
-				blockSize = plainText.length - i * blockSize;
+		for (int currentBlock = 0; currentBlock < blocksNumber; ++currentBlock) {
+			if ((currentBlock + 1) * blockSize > plainText.length) {
+				lastBlockSize = plainText.length - currentBlock * blockSize;
 			}
 
-			for (int j = i * blockSize; j < ((i + 1) * blockSize); ++j) {
-				cipherText[j] = (byte) (plainText[j] ^ newPad[j - (i * blockSize)]);
+			for (int i = currentBlock * blockSize; i < (currentBlock + 1) * blockSize - (blockSize - lastBlockSize); ++i) {
+				cipherText[i] = (byte) (plainText[i] ^ copyPad[i - (currentBlock * blockSize)]);
 
-				newPad[j - (i * blockSize)] = cipherText[j];
+				copyPad[i - (currentBlock * blockSize)] = cipherText[i];
 			}
 		}
 
