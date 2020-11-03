@@ -218,11 +218,20 @@ public class Encrypt {
 		// TODO: COMPLETE THIS METHOD
 		int blockSize = iv.length;
 		int blocksNumber;
+
+		byte[] newPad = new byte[blockSize];
+
+		// Fill new pad to have a new adress
+		for (int i = 0; i < blockSize; i++) {
+			newPad[i] = iv[i];
+		}
+
 		if(plainText.length % blockSize != 0) {
 			blocksNumber = plainText.length / blockSize + 1;
 		} else {
 			blocksNumber = plainText.length / blockSize;
 		}
+
 		byte[] cipherText = new byte[plainText.length];
 
 		for (int i = 0; i < blocksNumber; ++i) {
@@ -231,10 +240,9 @@ public class Encrypt {
 			}
 
 			for (int j = i * blockSize; j < ((i + 1) * blockSize); ++j) {
-				cipherText[j] = (byte) (plainText[j] ^ iv[j - (i * blockSize)]);
+				cipherText[j] = (byte) (plainText[j] ^ newPad[j - (i * blockSize)]);
 
-				//Faut-il créer un pad temporaire ou c'est ok de modifier le iv?
-				iv[j - (i * blockSize)] = cipherText[j];
+				newPad[j - (i * blockSize)] = cipherText[j];
 			}
 		}
 

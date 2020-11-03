@@ -241,6 +241,7 @@ public class Decrypt {
 
 		byte[] key = vigenereFindKey(cleanedText, keyLength);
 
+		System.out.println("Key : " + bytesToString(key));
 		return Encrypt.vigenere(cipher, key); //TODO: to be modified
 	}
 	
@@ -420,6 +421,12 @@ public class Decrypt {
 		//TODO : COMPLETE THIS METHOD
 		int blockSize = iv.length;
 		int blocksNumber;
+		byte[] newPad = new byte[blockSize];
+
+		// Fill new pad to have a new adress
+		for (int i = 0; i < blockSize; i++) {
+			newPad[i] = iv[i];
+		}
 
 		//Compute the number of blocks
 		if(cipher.length % blockSize != 0) {
@@ -436,10 +443,9 @@ public class Decrypt {
 			}
 
 			for (int i = currentBlock * blockSize; i < ((currentBlock + 1) * blockSize); ++i) {
-				plainText[i] = (byte) (cipher[i] ^ iv[i - (currentBlock * blockSize)]);
+				plainText[i] = (byte) (cipher[i] ^ newPad[i - (currentBlock * blockSize)]);
 
-				//Faut-il créer un pad temporaire ou c'est ok de modifier le iv?
-				iv[i - (currentBlock * blockSize)] = cipher[i];
+				newPad[i - (currentBlock * blockSize)] = cipher[i];
 			}
 		}
 

@@ -30,7 +30,17 @@ public class Main {
 		System.out.println();
 
 		//------------------------TEST COMPLET----------------------------
-		//String inputMessage = "i want some cheese motherfucker because I'm going to kick your ass";
+		/*String inputMessage = "i want some cheese motherfucker because I'm going to kick your ass";
+		String messageClean = cleanString(inputMessage);
+		byte[] messageBytes = stringToBytes(messageClean);
+		byte[] keyBytes = stringToBytes(key);*/
+
+		// CBC
+		byte[] c = Encrypt.cbc(messageBytes, keyBytes);
+		System.out.println(Helper.bytesToString(Encrypt.cbc(messageBytes, keyBytes)));
+		System.out.println(Helper.bytesToString(Decrypt.decryptCBC(c, keyBytes)));
+		testCBC(messageBytes, keyBytes);
+		System.out.println();
 
 		// CAESAR
 		testCaesar(messageBytes, keyBytes[0]);
@@ -109,10 +119,6 @@ public class Main {
 		//Decoding with frequencies
 		byte decodingKey = Decrypt.caesarWithFrequencies(result);
 		String sFD = bytesToString(Encrypt.caesar(result, decodingKey));
-		/**
-		 * Ici, le without key donne une réponse qui est pas le message d'origine mais dans fichier .txt on retrouve bien la phrase
-		 * a un endroit
-		 */
 		System.out.println("Decoded without knowing the key : " + sFD);
 	}
 
