@@ -28,8 +28,9 @@ public class Decrypt {
 	 */
 	public static String breakCipher(String cipher, int type) {
 		//TODO : COMPLETE THIS METHOD
+
 		byte[] cipherByte = Helper.stringToBytes(cipher);
-		String result = "";
+		String result;
 
 		if (type == CAESAR) {
 			byte key = caesarWithFrequencies(cipherByte);
@@ -44,7 +45,9 @@ public class Decrypt {
 			byte[][] bruteForceResult = xorBruteForce(cipherByte);
 			result = Decrypt.arrayToString(bruteForceResult);
 		}
-		else{ result = cipher; }
+		else {
+			result = cipher;
+		}
 
 		return result; //TODO: to be modified
 	}
@@ -56,7 +59,9 @@ public class Decrypt {
 	 */
 	public static String arrayToString(byte[][] bruteForceResult) {
 		//TODO : COMPLETE THIS METHOD
+
 		String message = "";
+
 		for(int row = 0; row < bruteForceResult.length; ++row) {
 			byte[] byteRow = new byte[bruteForceResult[row].length];
 
@@ -80,11 +85,12 @@ public class Decrypt {
 	 */
 	public static byte[][] caesarBruteForce(byte[] cipher) {
 		//TODO : COMPLETE THIS METHOD
+
 		byte[][] decodedText = new byte[ALPHABETSIZE][cipher.length];
 
-		for(int i = 1; i < ALPHABETSIZE; i++) {
-			for(int j = 0; j < cipher.length; j++) {
-				decodedText[i-1][j] = Encrypt.caesar(cipher, (byte) i)[j];
+		for(int row = 1; row < ALPHABETSIZE; ++row) {
+			for(int col = 0; col < cipher.length; ++col) {
+				decodedText[row-1][col] = Encrypt.caesar(cipher, (byte) row)[col];
 			}
 		}
 
@@ -99,8 +105,8 @@ public class Decrypt {
 	 */
 	public static byte caesarWithFrequencies(byte[] cipherText) {
 		//TODO : COMPLETE THIS METHOD
-		float[] frequencies = computeFrequencies(cipherText);
 
+		float[] frequencies = computeFrequencies(cipherText);
 		return caesarFindKey(frequencies); //TODO: to be modified
 	}
 
@@ -112,11 +118,12 @@ public class Decrypt {
 	 */
 	public static float[] computeFrequencies(byte[] cipherText) {
 		//TODO : COMPLETE THIS METHOD
+
 		int charactersWithoutSpace = 0;
 		float[] charactersFrequencies = new float[ALPHABETSIZE];
 
 		//Check how many times each character (except space) does appear in the cipher text
-		for(int i = 0; i < cipherText.length; i++) {
+		for(int i = 0; i < cipherText.length; ++i) {
 			byte character = cipherText[i];
 
 			if(character != SPACE) {
@@ -131,7 +138,7 @@ public class Decrypt {
 		}
 
 		//Divide by the total number of characters (except space)
-		for(int i = 0; i < charactersFrequencies.length; i++) {
+		for(int i = 0; i < charactersFrequencies.length; ++i) {
 			if(charactersFrequencies[i] != 0.0) {
 				charactersFrequencies[i] /= charactersWithoutSpace;
 			}
@@ -171,13 +178,14 @@ public class Decrypt {
 	 */
 	public static byte caesarFindKey(float[] charFrequencies) {
 		//TODO : COMPLETE THIS METHOD
-		double maxScalProd = 0.0;
-		double scalProd;
+
+		double maxScalarProduct = 0.0;
+		double scalarProd;
 		int maxIndex = 0;
 
 		//Compute the scalar products
 		for(int cipher = 0; cipher < charFrequencies.length; ++cipher) {
-			scalProd = 0;
+			scalarProd = 0;
 
 			for(int english = 0; english < ENGLISHFREQUENCIES.length; ++english) {
 
@@ -187,12 +195,12 @@ public class Decrypt {
 					sum -= 256;
 				}
 
-				scalProd += ENGLISHFREQUENCIES[english] * charFrequencies[sum];
+				scalarProd += ENGLISHFREQUENCIES[english] * charFrequencies[sum];
 			}
 
 			//Keep track of the maximum scalar product and its index
-			if(scalProd > maxScalProd) {
-				maxScalProd = scalProd;
+			if(scalarProd > maxScalarProduct) {
+				maxScalarProduct = scalarProd;
 				maxIndex = cipher;
 			}
 		}
@@ -213,10 +221,11 @@ public class Decrypt {
 	 */
 	public static byte[][] xorBruteForce(byte[] cipher) {
 		//TODO : COMPLETE THIS METHOD
+
 		byte[][] decodedText = new byte[ALPHABETSIZE][cipher.length];
 
-		for(int i = 1; i < ALPHABETSIZE; i++) {
-			for(int j = 0; j < cipher.length; j++) {
+		for(int i = 1; i < ALPHABETSIZE; ++i) {
+			for(int j = 0; j < cipher.length; ++j) {
 				decodedText[i-1][j] = Encrypt.xor(cipher, (byte) i)[j];
 			}
 		}
@@ -235,12 +244,17 @@ public class Decrypt {
 	 */
 	public static byte[] vigenereWithFrequencies(byte[] cipher) {
 		//TODO : COMPLETE THIS METHOD
+
+		// Clean the text (remove space)
 		List<Byte> cleanedText = removeSpaces(cipher);
 
+		// Find the key length
 		int keyLength = vigenereFindKeyLength(cleanedText);
 
+		// Find the key
 		byte[] key = vigenereFindKey(cleanedText, keyLength);
 
+		// Return of the message decrypted
 		return Encrypt.vigenere(cipher, key); //TODO: to be modified
 	}
 	
@@ -252,6 +266,7 @@ public class Decrypt {
 	 */
 	public static List<Byte> removeSpaces(byte[] array){
 		//TODO : COMPLETE THIS METHOD
+
 		List<Byte> list = new ArrayList<>();
 
 		for (int i = 0; i < array.length; ++i) {
@@ -271,10 +286,14 @@ public class Decrypt {
 	 */
 	public static int vigenereFindKeyLength(List<Byte> cipher) {
 		//TODO : COMPLETE THIS METHOD
+
+		// Find the coincidences
 		int[] coincidences = findCoincidences(cipher);
 
+		// Find the potential keys
 		List<Integer> potentialKeyLengths = findPotentialKeyLength(coincidences);
 
+		// Return the key length
 		return getKeyLength(potentialKeyLengths); //TODO: to be modified
 	}
 
@@ -314,6 +333,7 @@ public class Decrypt {
 	 */
 	public static List<Integer> findPotentialKeyLength(int[] coincidences) {
 		//TODO : COMPLETE THIS METHOD
+
 		//List containing the indexes of the maxima
 		List<Integer> maximaIndex = new ArrayList<>();
 
@@ -346,6 +366,7 @@ public class Decrypt {
 	 */
 	public static int getKeyLength(List<Integer> maximaIndex) {
 		//TODO : COMPLETE THIS METHOD
+
 		//Map: Key: distances, Values: occurrences
 		Map<Integer, Integer> distances = new HashMap<>();
 
@@ -385,10 +406,11 @@ public class Decrypt {
 	 */
 	public static byte[] vigenereFindKey(List<Byte> cipher, int keyLength) {
 		//TODO : COMPLETE THIS METHOD
+
 		byte[] key = new byte[keyLength];
 
-		for (int i = 0; i < keyLength; i++) {
-			//DIRECTEMENT UN ARRAY? COMMENT SAVOIR SA TAILLE?
+		for (int i = 0; i < keyLength; ++i) {
+
 			List<Byte> part = new ArrayList<>();
 			for (int j = i; j < cipher.size(); j += keyLength) {
 				part.add(cipher.get(j));
@@ -397,7 +419,7 @@ public class Decrypt {
 			//C'EST PAS LA MEILLEURE TECHNIQUE JE PENSE, A REFAIRE PEUT-ETRE
 			//Convert from list to array
 			byte[] arrayPart = new byte[part.size()];
-			for (int j = 0; j < part.size(); j++) {
+			for (int j = 0; j < part.size(); ++j) {
 				arrayPart[j] = part.get(j);
 			}
 
@@ -418,13 +440,14 @@ public class Decrypt {
 	 */
 	public static byte[] decryptCBC(byte[] cipher, byte[] iv) {
 		//TODO : COMPLETE THIS METHOD
+
 		int blockSize = iv.length;
 		int lastBlockSize = 5;
 		int blocksNumber;
 
 		// Fill the new pad to have a new adress
 		byte[] copyPad = new byte[blockSize];
-		for (int i = 0; i < blockSize; i++) {
+		for (int i = 0; i < blockSize; ++i) {
 			copyPad[i] = iv[i];
 		}
 

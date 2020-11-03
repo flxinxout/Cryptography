@@ -27,11 +27,12 @@ public class Encrypt {
 	 */
 	public static String encrypt(String message, String key, int type) {
 		// TODO: COMPLETE THIS METHOD
+
 		byte[] plainText = Helper.stringToBytes(message);
 		byte[] byteKey = Helper.stringToBytes(key);
 
 		byte[] result = null;
-		String codedMessage = "";
+		String codedMessage;
 
 		if (type == CAESAR) { result = caesar(plainText, byteKey[0]); }
 
@@ -150,12 +151,14 @@ public class Encrypt {
 
 		byte[] cipherText = new byte[plainText.length];
 		int currentKey = 0;
+
 		for(int i = 0; i < plainText.length; ++i) {
 			if(plainText[i] == SPACE) {
 				cipherText[i] = SPACE;
 			} else {
 				cipherText[i] = (byte) (plainText[i] + keyword[currentKey]);
 				currentKey++;
+
 				if(currentKey >= keyword.length) currentKey = 0;
 			}
 		}
@@ -247,8 +250,8 @@ public class Encrypt {
 
 		return cipherText;
 	}
-	
-	
+
+
 	/**
 	 * Generate a random pad/IV of bytes to be used for encoding
 	 * @param size the size of the pad
@@ -256,6 +259,7 @@ public class Encrypt {
 	 */
 	public static byte[] generatePad(int size) {
 		// TODO: COMPLETE THIS METHOD
+
 		if (size > 0){
 			byte[] pad = new byte[size];
 			for (int i = 0; i < size; ++i) {
@@ -263,12 +267,8 @@ public class Encrypt {
 				pad[i] = (byte) value;
 			}
 			return pad;
-		}
-		else{
+		} else {
 			return null; // TODO: to be modified
 		}
 	}
-	
-	
-	
 }
