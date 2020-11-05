@@ -9,8 +9,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class Helper {
+	private static Scanner input = new Scanner (System.in);
+
 	private static final String SEP = File.separator;
 	private static final String RES_PATH_HEADER = "res" + SEP;
 
@@ -110,7 +113,79 @@ public class Helper {
 		  }
 		  
 		  return string;
-		  
+	}
+
+	public static int enterInt(String message, int infBound, int supBound) {
+		int number;
+		boolean correct;
+
+		do {
+			System.out.println(message);
+
+			number = input.nextInt();
+			input.nextLine();
+			correct = (number >= infBound && number <= supBound);
+
+			if (!correct) {
+				System.out.println("\nERROR : Veuillez entrer un nombre entre "
+						+ infBound + " et " + supBound);
+			}
+		} while (!correct);
+
+		return number;
+	}
+
+	public static String enterString(String message) {
+		String answer;
+		System.out.println(message);
+		answer = input.nextLine();
+
+		return answer;
+	}
+
+	public static String enterString(String message, String... answers) {
+		String answer;
+		boolean correct = false;
+
+		do {
+			System.out.println(message);
+
+			answer = input.nextLine();
+
+			//Check if the answer is correct
+			for (int i = 0; i < answers.length; i++) {
+				if (answer.equals(answers[i])) {
+					correct = true;
+				}
+			}
+
+			if (!correct) {
+				System.out.print("\nERROR : Veuillez entrer une des réponses suivantes : ");
+				for (int i = 0; i < answers.length; i++) {
+					System.out.print(answers[i]);
+					if (i != answers.length - 1) {
+						System.out.print(", ");
+					}
+				}
+			}
+		} while (!correct);
+
+		return answer;
+	}
+
+	public static String enterString(String message, int minSize) {
+		String answer;
+		do {
+			answer = enterString(message);
+
+			if (answer.length() < minSize) {
+				System.out.println("\nERROR : Veuillez entrer un texte d'au moins " +
+						minSize + " caractères");
+			}
+
+		} while (answer.length() < minSize);
+
+		return answer;
 	}
 	
 	

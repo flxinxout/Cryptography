@@ -218,7 +218,7 @@ public class Encrypt {
 	public static byte[] cbc(byte[] plainText, byte[] iv) {
 		// TODO: COMPLETE THIS METHOD
 		int blockSize = iv.length;
-		int lastBlockSize = 5;
+		int lastBlockSize = blockSize;
 		int blocksNumber;
 
 		// Fill new pad to have a new address

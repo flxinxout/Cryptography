@@ -1,10 +1,6 @@
 package crypto;
 
-import java.util.function.DoubleToIntFunction;
-
-import static crypto.Helper.cleanString;
-import static crypto.Helper.stringToBytes;
-import static crypto.Helper.bytesToString;
+import static crypto.Helper.*;
 
 /*
  * Part 1: Encode (with note that one can reuse the functions to decode)
@@ -15,26 +11,133 @@ import static crypto.Helper.bytesToString;
 public class Main {
 	public static void main(String args[]) {
 
-		//----------------- DECLARATION DES MESSAGES ET CLES -----------------------
-		String message1 = Helper.readStringFromFile("text_4.txt");
-		String key1 = "2cF%5";
+		//----------------- MESSAGES AND KEYS DECLARATION -----------------------
+		String message1 = Helper.readStringFromFile("text_one.txt");
+		String message2 = Helper.readStringFromFile("text_two.txt");
+		String message3 = Helper.readStringFromFile("text_three.txt");
+		String message4 = Helper.readStringFromFile("text_4.txt");
 
-		/*String message2 = "Resonance describes the phenomenon of increased amplitude that occurs when the frequency of a periodically applied force (or a Fourier component of it) is equal or close to a natural frequency of the system on which it acts. When an oscillating force is applied at a resonant frequency of a dynamical system, the system will oscillate at a higher amplitude than when the same force is applied at other, non-resonant frequencies.[3]\n" +
-				"\n" +
-				"Frequencies at which the response amplitude is a relative maximum are also known as resonant frequencies or resonance frequencies of the system.[3] Small periodic forces that are near a resonant frequency of the system have the ability to produce large amplitude oscillations in the system due to the storage of vibrational energy.\n" +
-				"\n" +
-				"Resonance phenomena occur with all types of vibrations or waves: there is mechanical resonance, acoustic resonance, electromagnetic resonance, nuclear magnetic resonance (NMR), electron spin resonance (ESR) and resonance of quantum wave functions. Resonant systems can be used to generate vibrations of a specific frequency (e.g., musical instruments), or pick out specific frequencies from a complex vibration containing many frequencies (e.g., filters).\n" +
-				"\n" +
-				"The term resonance (from Latin resonantia, 'echo', from resonare, 'resound') originated from the field of acoustics, particularly the sympathetic resonance observed in musical instruments, e.g., when one string starts to vibrate and produce sound after a different one is struck. Another example, electrical resonance, occurs in a circuit with capacitors and inductors because the collapsing magnetic field of the inductor generates an electric current in its windings that charges the capacitor, and then the discharging capacitor provides an electric current that builds the magnetic field in the inductor. Once the circuit is charged, the oscillation is self-sustaining, and there is no external periodic driving action.[clarification needed] This is analogous to a mechanical pendulum, where mechanical energy is converted back and forth between kinetic and potential, and both systems are forms of simple harmonic oscillators.";
-		String key2 = "1w47Z3e";*/
+		String key1 = "2cF%5";
+		String key2 = "abcdefghij";
+		String key3 = "f4[%&ji!è";
 
 		//------------------------TESTS COMPLETS----------------------------
-		System.out.println("-------------------- TEST NO 1 --------------------");
-		overallGeneralTest(message1, key1);
+		shell();
 
-		//System.out.println("-------------------- TEST NO 2 --------------------");
-		//overallGeneralTest(message1, key1);
+		/*System.out.println("-------------------- TEST NO 1 --------------------");
+		overallGeneralTest(message1, key2);
+
+		/*System.out.println("-------------------- TEST NO 2 --------------------");
+		overallGeneralTest(message1, key2);
+
+		System.out.println("-------------------- TEST NO 3 --------------------");
+		overallGeneralTest(message1, key3);
+
+		System.out.println("-------------------- TEST NO 4 --------------------");
+		overallGeneralTest(message2, key1);
+
+		System.out.println("-------------------- TEST NO 5 --------------------");
+		overallGeneralTest(message2, key2);
+
+		System.out.println("-------------------- TEST NO 6 --------------------");
+		overallGeneralTest(message2, key3);
+
+		System.out.println("-------------------- TEST NO 7 --------------------");
+		overallGeneralTest(message3, key1);
+
+		System.out.println("-------------------- TEST NO 8 --------------------");
+		overallGeneralTest(message3, key2);
+
+		System.out.println("-------------------- TEST NO 9 --------------------");
+		overallGeneralTest(message3, key3);*/
+
 		// TODO: TO BE COMPLETED
+	}
+
+	public static void shell() {
+		boolean isFinished = false;
+		int nbUtilisation = 0;
+
+		System.out.println("====================================================================================================");
+		System.out.println("Bienvenue dans le programme d'encryptage / décryptage " +
+				"de Giovanni Ranieri et Dylan Vairoli !");
+		System.out.println("====================================================================================================");
+
+		do {
+			String modifiedMessage;
+			String key;
+
+			++nbUtilisation;
+			System.out.println("\n\n---------- Essai n°" + nbUtilisation + " ----------");
+			String inputMessage = enterString("Veuillez entrer le texte à crypter / décrypter " +
+					"(taille minimale de 6 caractères) : ", 6);
+
+			String messageClean = cleanString(inputMessage);
+
+			//Ask encryption or decrpytion
+			int crypt = enterInt("\nEntrez 0 si vous souhaitez crypter le texte, " +
+					"entrez 1 si vous souhaitez décrypter le texte", 0, 1);
+
+			//----- Encryption way -----
+			if (crypt == 0) {
+
+				//Choice of the encryption method
+				int method = enterInt("\nQuelle méthode de cryptage souhaitez vous utiliser?\n " +
+						"0 := Caesar, 1 := Vigenere, 2 := XOR, 3 := One Time Pad, " +
+						"4 := CBC ", 0, 4);
+
+				//Enter key for every method except One Time Pad
+				if (method != 3) {
+					key = enterString("\nVeuillez entrer la clé de cryptage : ", 1);
+				}
+				//Enter key for One Time Pad
+				else {
+					key = enterString("\nVeuillez entrer le pad de cryptage " +
+							"(sa taille doit être au moins aussi grande " +
+							"que le texte à crypter) : ", inputMessage.length());
+				}
+
+				//Encrypt the message
+				modifiedMessage = Encrypt.encrypt(messageClean, key, method);
+				System.out.println("\nVotre texte crypté est : " + modifiedMessage);
+			}
+
+			//Decryption way
+			if (crypt == 1) {
+
+				//Choice of the decryption method
+				int method = enterInt("\nQuelle méthode de décryptage " +
+						"souhaitez-vous utiliser? 0 := Caesar, 1 := Vigenere, " +
+						"2 := XOR (force brute), 3 := CBC (avec clé connue uniquement)",
+						0 ,3);
+
+				//Decrypt all but CBC
+				if (method != 3) {
+					modifiedMessage = Decrypt.breakCipher(inputMessage, method);
+				}
+
+				//Decrypt CBC
+				else {
+					key = enterString("\nVeuillez entrer la clé utilisée lors du " +
+							"cryptage : ", 1);
+
+					byte[] byteKey = stringToBytes(key);
+
+					byte[] byteMessage = stringToBytes(messageClean);
+					modifiedMessage = bytesToString(Decrypt.decryptCBC(byteMessage, byteKey));
+				}
+				System.out.println("\nVotre texte décrypté est : " + modifiedMessage);
+			}
+
+			//Ask for repeat
+			String repeat = enterString("\nSouhaitez-vous recommencer ? " +
+					"[Oui / Non] ", "Oui", "Non");
+
+			if (repeat.equals("Non")) {
+				System.out.println("Merci d'avoir utilisé notre programme.");
+				isFinished = true;
+			}
+		} while (!isFinished);
 	}
 
 	public static void overallGeneralTest(String message, String key){

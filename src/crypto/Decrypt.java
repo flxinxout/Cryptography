@@ -1,10 +1,8 @@
 package crypto;
 
 import static crypto.Helper.bytesToString;
-import static crypto.Helper.stringToBytes;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -313,9 +311,11 @@ public class Decrypt {
 		int[] coincidences = new int[cipher.size()];
 
 		//Iterates through the cipher array and add the coincidences to their array
+
+		//#####A REGARDER LA CONDITION DE LA DEUXIEME BOUCLE#####
 		for (int shift = 1; shift < cipher.size(); ++shift) {
-			for (int i = shift - 1; i < cipher.size() - shift; ++i) {
-				if (cipher.get(i) == cipher.get(i + shift)){
+			for (int i = shift; i < cipher.size(); ++i) {
+				if (cipher.get(i) == cipher.get(i - shift)){
 					coincidences[shift-1] += 1;
 				}
 			}
@@ -329,12 +329,12 @@ public class Decrypt {
 	 * Sub-Method (Part 2) to "vigenereFindKeyLength" that computes the
 	 * different potential key lengths from the coincidences array.
 	 * @param coincidences the array representing the coincidences in the encoded text
-	 * @return the length of the key
+	 * @return the potential lengths of the key
 	 */
 	public static List<Integer> findPotentialKeyLength(int[] coincidences) {
 		//TODO : COMPLETE THIS METHOD
 
-		//List containing the indexes of the maxima
+		//List containing the indexes (of coincidences array) of the maxima
 		List<Integer> maximaIndex = new ArrayList<>();
 
 		//Check the two first elements of the list
@@ -347,7 +347,7 @@ public class Decrypt {
 		}
 
 		//Add all the maxima indexes in the list
-		for (int i = 2; i < Math.ceil(coincidences.length / 2); i++) {
+		for (int i = 2; i < Math.ceil(coincidences.length / 2); ++i) {
 			if (coincidences[i] > coincidences[i+1] && coincidences[i] > coincidences[i+2] &&
 					coincidences[i] > coincidences[i-1] && coincidences[i] > coincidences[i-2]){
 				maximaIndex.add(i);
@@ -442,7 +442,7 @@ public class Decrypt {
 		//TODO : COMPLETE THIS METHOD
 
 		int blockSize = iv.length;
-		int lastBlockSize = 5;
+		int lastBlockSize = blockSize;
 		int blocksNumber;
 
 		// Fill the new pad to have a new adress
