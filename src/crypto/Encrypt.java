@@ -96,8 +96,6 @@ public class Encrypt {
 		return caesar(plainText, key, false); // TODO: to be modified
 	}
 
-
-
 	//-----------------------XOR-------------------------
 	
 	/**
@@ -122,6 +120,7 @@ public class Encrypt {
 
 		return cipherText; // TODO: to be modified
 	}
+
 	/**
 	 * Method to encode a byte array using a XOR with a single byte long key
 	 * spaces are not encoded
