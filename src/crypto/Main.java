@@ -22,15 +22,15 @@ public class Main {
 		String key3 = "f4[%&ji!è";
 
 		//------------------------TESTS COMPLETS----------------------------
-		shell();
+		//shell();
 
 		/*System.out.println("-------------------- TEST NO 1 --------------------");
+		overallGeneralTest(message1, key1);*/
+
+		System.out.println("-------------------- TEST NO 2 --------------------");
 		overallGeneralTest(message1, key2);
 
-		/*System.out.println("-------------------- TEST NO 2 --------------------");
-		overallGeneralTest(message1, key2);
-
-		System.out.println("-------------------- TEST NO 3 --------------------");
+		/*System.out.println("-------------------- TEST NO 3 --------------------");
 		overallGeneralTest(message1, key3);
 
 		System.out.println("-------------------- TEST NO 4 --------------------");
@@ -52,92 +52,6 @@ public class Main {
 		overallGeneralTest(message3, key3);*/
 
 		// TODO: TO BE COMPLETED
-	}
-
-	public static void shell() {
-		boolean isFinished = false;
-		int nbUtilisation = 0;
-
-		System.out.println("====================================================================================================");
-		System.out.println("Bienvenue dans le programme d'encryptage / décryptage " +
-				"de Giovanni Ranieri et Dylan Vairoli !");
-		System.out.println("====================================================================================================");
-
-		do {
-			String modifiedMessage;
-			String key;
-
-			++nbUtilisation;
-			System.out.println("\n\n---------- Essai n°" + nbUtilisation + " ----------");
-			String inputMessage = enterString("Veuillez entrer le texte à crypter / décrypter " +
-					"(taille minimale de 6 caractères) : ", 6);
-
-			String messageClean = cleanString(inputMessage);
-
-			//Ask encryption or decrpytion
-			int crypt = enterInt("\nEntrez 0 si vous souhaitez crypter le texte, " +
-					"entrez 1 si vous souhaitez décrypter le texte", 0, 1);
-
-			//----- Encryption way -----
-			if (crypt == 0) {
-
-				//Choice of the encryption method
-				int method = enterInt("\nQuelle méthode de cryptage souhaitez vous utiliser?\n " +
-						"0 := Caesar, 1 := Vigenere, 2 := XOR, 3 := One Time Pad, " +
-						"4 := CBC ", 0, 4);
-
-				//Enter key for every method except One Time Pad
-				if (method != 3) {
-					key = enterString("\nVeuillez entrer la clé de cryptage : ", 1);
-				}
-				//Enter key for One Time Pad
-				else {
-					key = enterString("\nVeuillez entrer le pad de cryptage " +
-							"(sa taille doit être au moins aussi grande " +
-							"que le texte à crypter) : ", inputMessage.length());
-				}
-
-				//Encrypt the message
-				modifiedMessage = Encrypt.encrypt(messageClean, key, method);
-				System.out.println("\nVotre texte crypté est : " + modifiedMessage);
-			}
-
-			//Decryption way
-			if (crypt == 1) {
-
-				//Choice of the decryption method
-				int method = enterInt("\nQuelle méthode de décryptage " +
-						"souhaitez-vous utiliser? 0 := Caesar, 1 := Vigenere, " +
-						"2 := XOR (force brute), 3 := CBC (avec clé connue uniquement)",
-						0 ,3);
-
-				//Decrypt all but CBC
-				if (method != 3) {
-					modifiedMessage = Decrypt.breakCipher(inputMessage, method);
-				}
-
-				//Decrypt CBC
-				else {
-					key = enterString("\nVeuillez entrer la clé utilisée lors du " +
-							"cryptage : ", 1);
-
-					byte[] byteKey = stringToBytes(key);
-
-					byte[] byteMessage = stringToBytes(messageClean);
-					modifiedMessage = bytesToString(Decrypt.decryptCBC(byteMessage, byteKey));
-				}
-				System.out.println("\nVotre texte décrypté est : " + modifiedMessage);
-			}
-
-			//Ask for repeat
-			String repeat = enterString("\nSouhaitez-vous recommencer ? " +
-					"[Oui / Non] ", "Oui", "Non");
-
-			if (repeat.equals("Non")) {
-				System.out.println("Merci d'avoir utilisé notre programme.");
-				isFinished = true;
-			}
-		} while (!isFinished);
 	}
 
 	public static void overallGeneralTest(String message, String key){
@@ -168,6 +82,14 @@ public class Main {
 
 		// CBC
 		testCBC(messageBytes, keyBytes);
+		System.out.println();
+
+		// CBC BONUS WITH CAESAR
+		testCBCBonusWithCaesar(messageBytes, keyBytes, (byte) 1);
+		System.out.println();
+
+		// CBC BONUS WITH XOR
+		testCBCBonusWithXor(messageBytes, keyBytes, keyBytes[0]);
 		System.out.println();
 
 		//BREAK CIPHER
@@ -301,6 +223,37 @@ public class Main {
 		//Decoding with the key
 		byte[] plainText = Decrypt.decryptCBC(result, iv);
 		String sFD = bytesToString(plainText);
+		System.out.println("Decoded knowing the key: " + sFD);
+	}
+
+	//Run the Encoding and Decoding using CBC BONUS pattern and CAESAR
+	public static void testCBCBonusWithCaesar(byte[] string, byte[] iv, byte key) {
+		System.out.println("------CBC BONUS CAESAR------");
+
+		//Encoding
+		byte[] result = Bonus.cbcBonusWithCaesar(string, iv, key);
+		String s = bytesToString(result);
+		System.out.println("Encoded : " + s);
+
+		//Decoding with the key
+		byte[] plainText = Bonus.decryptCBCBonusWithCaesar(result, iv, key);
+		String sFD = bytesToString(plainText);
+		System.out.println("Decoded knowing the key: " + sFD);
+	}
+
+	//Run the Encoding and Decoding using CBC BONUS pattern and XOR
+	public static void testCBCBonusWithXor(byte[] string, byte[] iv, byte key) {
+		System.out.println("------CBC BONUS XOR------");
+
+		//Encoding
+		byte[] result = Bonus.cbcBonusWithXor(string, iv, key);
+		String s = bytesToString(result);
+		System.out.println("Encoded : " + s);
+		System.out.println();
+
+		//Decoding with the key
+		byte[][] plainText = Bonus.decryptCBCBonusWithXor(result, iv);
+		String sFD = Decrypt.arrayToString(plainText);
 		System.out.println("Decoded knowing the key: " + sFD);
 	}
 }
