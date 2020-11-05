@@ -150,11 +150,13 @@ public class Helper {
 		do {
 			System.out.println(message);
 
-			answer = input.nextLine();
+			answer = input.nextLine().toLowerCase();
 
 			//Check if the answer is correct
 			for (int i = 0; i < answers.length; i++) {
-				if (answer.equals(answers[i])) {
+				String answerToLowerCase = answer.toLowerCase();
+				String answersToLowerCase = answers[i].toLowerCase();
+				if (answerToLowerCase.equals(answersToLowerCase)) {
 					correct = true;
 				}
 			}
