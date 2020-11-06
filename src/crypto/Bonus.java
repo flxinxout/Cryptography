@@ -1,12 +1,87 @@
 package crypto;
 
+import java.util.Scanner;
 import static crypto.Helper.*;
-import static crypto.Helper.enterString;
 
 public class Bonus {
+    private static Scanner input = new Scanner (System.in);
 
-    //-------------BONUS----------------
+    //-------------HELPER METHODS----------------
+    public static int enterInt(String message, int infBound, int supBound) {
+        int number;
+        boolean correct;
 
+        do {
+            System.out.println(message);
+
+            number = input.nextInt();
+            input.nextLine();
+            correct = (number >= infBound && number <= supBound);
+
+            if (!correct) {
+                System.out.println("\nERROR : Veuillez entrer un nombre entre "
+                        + infBound + " et " + supBound);
+            }
+        } while (!correct);
+
+        return number;
+    }
+
+    public static String enterString(String message) {
+        String answer;
+        System.out.println(message);
+        answer = input.nextLine();
+
+        return answer;
+    }
+
+    public static String enterString(String message, String... answers) {
+        String answer;
+        boolean correct = false;
+
+        do {
+            System.out.println(message);
+
+            answer = input.nextLine().toLowerCase();
+
+            //Check if the answer is correct
+            for (int i = 0; i < answers.length; i++) {
+                answers[i] = answers[i].toLowerCase();
+                if (answer.equals(answers[i])) {
+                    correct = true;
+                }
+            }
+
+            if (!correct) {
+                System.out.print("\nERROR : Veuillez entrer une des réponses suivantes : ");
+                for (int i = 0; i < answers.length; i++) {
+                    System.out.print(answers[i]);
+                    if (i != answers.length - 1) {
+                        System.out.print(", ");
+                    }
+                }
+            }
+        } while (!correct);
+
+        return answer;
+    }
+
+    public static String enterString(String message, int minSize) {
+        String answer;
+        do {
+            answer = enterString(message);
+
+            if (answer.length() < minSize) {
+                System.out.println("\nERROR : Veuillez entrer un texte d'au moins " +
+                        minSize + " caractères");
+            }
+
+        } while (answer.length() < minSize);
+
+        return answer;
+    }
+
+    //-------------EXTENDED CBC----------------
     /**
      * Method to encode a byte array message using a single character key
      * the key is simply added to each byte of the original message
@@ -28,8 +103,9 @@ public class Bonus {
         return cipherText; // TODO: to be modified
     }
 
+
     /**
-     * Method to encode a byte array (AND THE SPACE) using a XOR with a single byte long key
+     * Method to encode a byte array (AND THE SPACES) using a XOR with a single byte long key
      * @param plainText the byte array representing the string to encode
      * @param key the byte we will use to XOR
      * @return an encoded byte array
@@ -46,6 +122,7 @@ public class Bonus {
         return cipherText; // TODO: to be modified
     }
 
+
     /**
      * Method used to decode a String encoded following the CBC pattern and the CAESAR encryption
      * @param cipher the byte array representing the encoded text
@@ -54,49 +131,15 @@ public class Bonus {
      */
     public static byte[] decryptCBCBonusWithCaesar(byte[] cipher, byte[] iv, byte key) {
         //TODO : COMPLETE THIS METHOD
+        byte[] cbc = caesarWithoutSpace(cipher, (byte) -key);
+        byte[] plainText = Decrypt.decryptCBC(cbc, iv);
 
-        int blockSize = iv.length;
-        int lastBlockSize = blockSize;
-        int blocksNumber;
-
-        // Cipher Text without caesar encryption
-        byte[] cbcWithoutCaesar;
-
-        // Fill the new pad to have a new adress
-        byte[] copyPad = new byte[blockSize];
-        for (int i = 0; i < blockSize; ++i) {
-            copyPad[i] = iv[i];
-        }
-
-        // Decrypt the caesar encryption
-        cbcWithoutCaesar = caesarWithoutSpace(cipher, (byte) (-key));
-
-        //Compute the number of blocks
-        if(cipher.length % blockSize != 0) {
-            blocksNumber = cbcWithoutCaesar.length / blockSize + 1;
-        } else {
-            blocksNumber = cbcWithoutCaesar.length / blockSize;
-        }
-
-        //Fill the plain text block by block
-        byte[] plainText = new byte[cipher.length];
-        for (int currentBlock = 0; currentBlock < blocksNumber; ++currentBlock) {
-            if (cbcWithoutCaesar.length % blockSize != 0 && (currentBlock + 1) * blockSize > cbcWithoutCaesar.length) {
-                lastBlockSize = cbcWithoutCaesar.length - currentBlock * blockSize;
-            }
-
-            for (int i = currentBlock * blockSize; i < (currentBlock + 1) * blockSize - (blockSize - lastBlockSize); ++i) {
-                plainText[i] = (byte) (cbcWithoutCaesar[i] ^ copyPad[i - (currentBlock * blockSize)]);
-
-                copyPad[i - (currentBlock * blockSize)] = cbcWithoutCaesar[i];
-            }
-        }
-
-        return plainText; //TODO: to be modified
+        return plainText;
     }
 
+
     /**
-     * Method used to decode a String encoded following the CBC pattern and the CAESAR encryption
+     * Method used to decode a String encoded following the CBC pattern and the XOR encryption
      * @param cipher the byte array representing the encoded text
      * @param iv the pad of size BLOCKSIZE we use to start the chain encoding
      * @return the clear text
@@ -124,11 +167,8 @@ public class Bonus {
         cbcWithoutXor = Decrypt.xorBruteForce(cipher);
 
         //Compute the number of blocks
-        if(cipher.length % blockSize != 0) {
-            blocksNumber = cbcWithoutXor.length / blockSize + 1;
-        } else {
-            blocksNumber = cbcWithoutXor.length / blockSize;
-        }
+        blocksNumber = cipher.length / blockSize +
+                ((cipher.length % blockSize == 0) ? 0 : 1);
 
         //For the different lines of the 2 dimensions array
         //Decode each line
@@ -153,6 +193,7 @@ public class Bonus {
         return decrypted; //TODO: to be modified
     }
 
+
     /**
      * Method applying a basic chain block counter of XOR WITH encryption method, here CAESAR. Encodes spaces.
      * @param plainText the byte array representing the string to encode
@@ -161,46 +202,12 @@ public class Bonus {
      * @return an encoded byte array
      */
     public static byte[] cbcBonusWithCaesar(byte[] plainText, byte[] iv, byte key) {
-        int blockSize = iv.length;
-        int lastBlockSize = blockSize;
-        int blocksNumber;
+        byte[] cbc = Encrypt.cbc(plainText, iv);
+        byte[] cipher = caesarWithoutSpace(cbc, key);
 
-        // Final byte Array with caesar encryption
-        byte[] finalArray;
-
-        // Fill new pad to have a new address
-        byte[] copyPad = new byte[blockSize];
-        for (int i = 0; i < blockSize; i++) {
-            copyPad[i] = iv[i];
-        }
-
-        //Compute blocks number
-        if(plainText.length % blockSize != 0) {
-            blocksNumber = plainText.length / blockSize + 1;
-        } else {
-            blocksNumber = plainText.length / blockSize;
-        }
-
-        //Fill the cipher text block by block
-        byte[] cipherText = new byte[plainText.length];
-        for (int currentBlock = 0; currentBlock < blocksNumber; ++currentBlock) {
-            if ((currentBlock + 1) * blockSize > plainText.length) {
-                lastBlockSize = plainText.length - currentBlock * blockSize;
-            }
-
-            for (int i = currentBlock * blockSize; i < (currentBlock + 1) * blockSize - (blockSize - lastBlockSize); ++i) {
-                cipherText[i] = (byte) (plainText[i] ^ copyPad[i - (currentBlock * blockSize)]);
-
-                copyPad[i - (currentBlock * blockSize)] = cipherText[i];
-            }
-        }
-
-        System.out.println();
-        finalArray = caesarWithoutSpace(cipherText, key);
-        System.out.println(cipherText.length);
-
-        return finalArray;
+        return cipher;
     }
+
 
     /**
      * Method applying a basic chain block counter of XOR WITH encryption method, here XOR. Encodes spaces.
@@ -210,47 +217,15 @@ public class Bonus {
      * @return an encoded byte array
      */
     public static byte[] cbcBonusWithXor(byte[] plainText, byte[] iv, byte key) {
-        int blockSize = iv.length;
-        int lastBlockSize = blockSize;
-        int blocksNumber;
+        byte[] cbc = Encrypt.cbc(plainText, iv);
+        byte[] cipher = xorWithoutSpace(cbc, key);
 
-        // Final byte Array with caesar encryption
-        byte[] finalArray;
-
-        // Fill new pad to have a new address
-        byte[] copyPad = new byte[blockSize];
-        for (int i = 0; i < blockSize; i++) {
-            copyPad[i] = iv[i];
-        }
-
-        //Compute blocks number
-        if(plainText.length % blockSize != 0) {
-            blocksNumber = plainText.length / blockSize + 1;
-        } else {
-            blocksNumber = plainText.length / blockSize;
-        }
-
-        //Fill the cipher text block by block
-        byte[] cipherText = new byte[plainText.length];
-        for (int currentBlock = 0; currentBlock < blocksNumber; ++currentBlock) {
-            if ((currentBlock + 1) * blockSize > plainText.length) {
-                lastBlockSize = plainText.length - currentBlock * blockSize;
-            }
-
-            for (int i = currentBlock * blockSize; i < (currentBlock + 1) * blockSize - (blockSize - lastBlockSize); ++i) {
-                cipherText[i] = (byte) (plainText[i] ^ copyPad[i - (currentBlock * blockSize)]);
-
-                copyPad[i - (currentBlock * blockSize)] = cipherText[i];
-            }
-        }
-
-        finalArray = xorWithoutSpace(cipherText, key);
-
-        return finalArray;
+        return cipher;
     }
 
-    //--------------- BONUS 2 - SHELL -----------------
 
+
+    //--------------- BONUS 2 - SHELL -----------------
     /**
      * Method that create a shell program to implement encryption and decryption
      */
@@ -259,9 +234,49 @@ public class Bonus {
         int nbUtilisation = 0;
 
         System.out.println("====================================================================================================");
-        System.out.println("Bienvenue dans le programme d'encryptage / décryptage " +
+        System.out.println("️Bienvenue dans le programme d'encryptage / décryptage " +
                 "de Giovanni Ranieri et Dylan Vairoli !");
         System.out.println("====================================================================================================");
+
+        String aide = enterString("\nSi vous avez besoin d'assistance, tapez 'aide'");
+
+        if (aide.equals("aide")){
+            System.out.println("\n----- Aide -----\n" +
+                    "    Dans ce programme vous avez la possibilité de crypter ou décrypter un message de votre choix.\n" +
+                    "\n" +
+                    "    Avant tout il faut savoir que ce programme est adapté au jeu de caractères ISO-8859-1. Dans\n" +
+                    "    cette norme, 256 caractères sont représentés.\n" +
+                    "\n" +
+                    "    Voici un descriptif des différentes étapes du programme:\n" +
+                    "       1. Entrer le message à crypter ou décrypter. Il doit être composé d'AU MOINS 6 CARACTERES\n" +
+                    "       2. Choisir si vous souhaitez crypter ou décrypter le message (0 = crypter, 1 = décrypter)\n" +
+                    "\n" +
+                    "----- Voie d'encryptage -----\n" +
+                    "    Supposons que vous ayiez choisi d'encrypter le message:\n" +
+                    "        E3. Choisir votre méthode d'encryptage :\n" +
+                    "            0 = Caesar\n" +
+                    "            1 = Vigenere\n" +
+                    "            2 = XOR\n" +
+                    "            3 = One Time Pad\n" +
+                    "            4 = CBC\n" +
+                    "\n" +
+                    "        E4. Entrer votre clé de cryptage (Sous forme textuelle, sa conversion en byte se fera automatiquement)\n" +
+                    "            !ATTENTION!\n" +
+                    "                 - Les méthodes Caesar et XOR ne prendront comme clé effective uniquement le premier caractère\n" +
+                    "                   que vous entrez.\n" +
+                    "                 - La méthode One Time Pad requiert un pad (clé) d'au moins la même taille que le texte à crypter.\n" +
+                    "\n" +
+                    "\n" +
+                    "----- Voie de décryptage -----\n" +
+                    "    Supposons que vous ayiez choisi de décrypter le message:\n" +
+                    "        D3. Choisir votre méthode de décryptage :\n" +
+                    "            0 = Caesar\n" +
+                    "            1 = Vigenere\n" +
+                    "            2 = XOR (Méthode force brute : vous devrez chercher manuellement le résultat)\n" +
+                    "            3 = CBC (Décryptage possible uniquement en connaissant la clé utilisée lors du cryptage)\n" +
+                    "\n" +
+                    "        (CBC) Entrer la clé de cryptage (Sous forme textuelle, sa conversion en byte se fera automatiquement)   \n");
+        }
 
         do {
             String modifiedMessage;
@@ -334,8 +349,8 @@ public class Bonus {
                     "[Oui / Non] ", "Oui", "Non");
 
             //If it's no (repeat toLowerCase())
-            if (repeat.equals("Non".toLowerCase())) {
-                System.out.println("Merci d'avoir utilisé notre programme.");
+            if (repeat.equals("non")) {
+                System.out.println("\nMerci d'avoir utilisé notre programme.");
                 isFinished = true;
             }
         } while (!isFinished);

@@ -15,20 +15,21 @@ public class Main {
 		String message1 = Helper.readStringFromFile("text_one.txt");
 		String message2 = Helper.readStringFromFile("text_two.txt");
 		String message3 = Helper.readStringFromFile("text_three.txt");
-		String message4 = Helper.readStringFromFile("text_4.txt");
 
 		String key1 = "2cF%5";
 		String key2 = "abcdefghij";
 		String key3 = "f4[%&ji!è";
 
+		//------------------------SHELL----------------------------
+		Bonus.shell();
+
 		//------------------------TESTS COMPLETS----------------------------
-		//shell();
 
 		/*System.out.println("-------------------- TEST NO 1 --------------------");
 		overallGeneralTest(message1, key1);*/
 
-		System.out.println("-------------------- TEST NO 2 --------------------");
-		overallGeneralTest(message1, key2);
+		/*System.out.println("-------------------- TEST NO 2 --------------------");
+		overallGeneralTest(message1, key2);*/
 
 		/*System.out.println("-------------------- TEST NO 3 --------------------");
 		overallGeneralTest(message1, key3);

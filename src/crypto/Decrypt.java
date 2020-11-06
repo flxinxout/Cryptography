@@ -19,6 +19,8 @@ public class Decrypt {
 	public static final double[] ENGLISHFREQUENCIES = {0.08497,0.01492,0.02202,0.04253,0.11162,0.02228,0.02015,0.06094,0.07546,0.00153,0.01292,0.04025,0.02406,0.06749,0.07507,0.01929,0.00095,0.07587,0.06327,0.09356,0.02758,0.00978,0.0256,0.0015,0.01994,0.00077};
 
 
+
+	//-----------------------General-------------------------
 	/**
 	 * Method to break a string encoded with different types of cryptosystems
 	 * @param type the integer representing the method to break : 0 = Caesar, 1 = Vigenere, 2 = XOR
@@ -26,7 +28,6 @@ public class Decrypt {
 	 */
 	public static String breakCipher(String cipher, int type) {
 		//TODO : COMPLETE THIS METHOD
-
 		byte[] cipherByte = Helper.stringToBytes(cipher);
 		String result;
 
@@ -57,7 +58,6 @@ public class Decrypt {
 	 */
 	public static String arrayToString(byte[][] bruteForceResult) {
 		//TODO : COMPLETE THIS METHOD
-
 		String message = "";
 
 		for(int row = 0; row < bruteForceResult.length; ++row) {
@@ -72,7 +72,8 @@ public class Decrypt {
 		
 		return message; //TODO: to be modified
 	}
-	
+
+
 	
 	//-----------------------Caesar-------------------------
 	/**
@@ -99,7 +100,7 @@ public class Decrypt {
 	/**
 	 * Method that finds the key to decode a Caesar encoding by comparing frequencies
 	 * @param cipherText the byte array representing the encoded text
-	 * @return the encoding key
+	 * @return the decoding key
 	 */
 	public static byte caesarWithFrequencies(byte[] cipherText) {
 		//TODO : COMPLETE THIS METHOD
@@ -116,8 +117,7 @@ public class Decrypt {
 	 */
 	public static float[] computeFrequencies(byte[] cipherText) {
 		//TODO : COMPLETE THIS METHOD
-
-		int charactersWithoutSpace = 0;
+		int charactersButSpace = 0;
 		float[] charactersFrequencies = new float[ALPHABETSIZE];
 
 		//Check how many times each character (except space) does appear in the cipher text
@@ -125,7 +125,7 @@ public class Decrypt {
 			byte character = cipherText[i];
 
 			if(character != SPACE) {
-				charactersWithoutSpace += 1;
+				charactersButSpace += 1;
 
 				if (character >= 0 && character <= 127){
 					charactersFrequencies[character] += 1.0;
@@ -138,7 +138,7 @@ public class Decrypt {
 		//Divide by the total number of characters (except space)
 		for(int i = 0; i < charactersFrequencies.length; ++i) {
 			if(charactersFrequencies[i] != 0.0) {
-				charactersFrequencies[i] /= charactersWithoutSpace;
+				charactersFrequencies[i] /= charactersButSpace;
 			}
 		}
 
@@ -147,9 +147,9 @@ public class Decrypt {
 
 
 	/**
-	 * TEST ONLY Method that displays in the console the frequency of each character of a
-	 * frequencies array
-	 * @param frequenciesArray the frequency array
+	 * TEST ONLY Method that displays in the console the frequency of each
+	 * character of a frequencies array
+	 * @param frequenciesArray the frequencies array
 	 */
 	public static void displayFrequencies(float[] frequenciesArray){
 		//Keep track of how many letters have been used (frequency != 0) (except spaces)
@@ -172,7 +172,7 @@ public class Decrypt {
 	/**
 	 * Method that finds the key used by a  Caesar encoding from an array of character frequencies
 	 * @param charFrequencies the array of character frequencies
-	 * @return the key
+	 * @return the decoding key
 	 */
 	public static byte caesarFindKey(float[] charFrequencies) {
 		//TODO : COMPLETE THIS METHOD
@@ -203,12 +203,11 @@ public class Decrypt {
 			}
 		}
 
-		/* The key used to encrypt the message: the distance between the maxIndex
-		 * (which corresponds to "a" in the cipher frequence table) and
-		 * the byte number for a (97) */
+		// The key which should be used to decrypt the message
 		return (byte) -(maxIndex - 96); //TODO: to be modified
 	}
-	
+
+
 	
 	//-----------------------XOR-------------------------
 	/**
@@ -231,7 +230,8 @@ public class Decrypt {
 		return decodedText; //TODO: to be modified
 	}
 
-	
+
+
 	//-----------------------Vigenere-------------------------
 	// Algorithm : see  https://www.youtube.com/watch?v=LaWp_Kq0cKs	
 	/**
@@ -242,17 +242,12 @@ public class Decrypt {
 	 */
 	public static byte[] vigenereWithFrequencies(byte[] cipher) {
 		//TODO : COMPLETE THIS METHOD
-
-		// Clean the text (remove space)
 		List<Byte> cleanedText = removeSpaces(cipher);
 
-		// Find the key length
 		int keyLength = vigenereFindKeyLength(cleanedText);
 
-		// Find the key
 		byte[] key = vigenereFindKey(cleanedText, keyLength);
 
-		// Return of the message decrypted
 		return Encrypt.vigenere(cipher, key); //TODO: to be modified
 	}
 	
@@ -284,14 +279,10 @@ public class Decrypt {
 	 */
 	public static int vigenereFindKeyLength(List<Byte> cipher) {
 		//TODO : COMPLETE THIS METHOD
-
-		// Find the coincidences
 		int[] coincidences = findCoincidences(cipher);
 
-		// Find the potential keys
 		List<Integer> potentialKeyLengths = findPotentialKeyLength(coincidences);
 
-		// Return the key length
 		return getKeyLength(potentialKeyLengths); //TODO: to be modified
 	}
 
@@ -311,8 +302,6 @@ public class Decrypt {
 		int[] coincidences = new int[cipher.size()];
 
 		//Iterates through the cipher array and add the coincidences to their array
-
-		//#####A REGARDER LA CONDITION DE LA DEUXIEME BOUCLE#####
 		for (int shift = 1; shift < cipher.size(); ++shift) {
 			for (int i = shift; i < cipher.size(); ++i) {
 				if (cipher.get(i) == cipher.get(i - shift)){
@@ -387,7 +376,8 @@ public class Decrypt {
 		int maxOccurrence = 0;
 
 		for (int key : distances.keySet()) {
-			if (distances.get(key) > maxOccurrence){
+			if (distances.get(key) > maxOccurrence ||
+					(distances.get(key) == maxOccurrence && key > keyLength)){
 				maxOccurrence = distances.get(key);
 				keyLength = key;
 			}
@@ -430,7 +420,8 @@ public class Decrypt {
 		return key; //TODO: to be modified
 	}
 	
-	
+
+
 	//-----------------------Basic CBC-------------------------
 	/**
 	 * Method used to decode a String encoded following the CBC pattern
@@ -452,11 +443,8 @@ public class Decrypt {
 		}
 
 		//Compute the number of blocks
-		if(cipher.length % blockSize != 0) {
-			blocksNumber = cipher.length / blockSize + 1;
-		} else {
-			blocksNumber = cipher.length / blockSize;
-		}
+		blocksNumber = cipher.length / blockSize +
+				((cipher.length % blockSize == 0) ? 0 : 1);
 
 		//Fill the plain text block by block
 		byte[] plainText = new byte[cipher.length];

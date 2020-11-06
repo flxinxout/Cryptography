@@ -14,8 +14,9 @@ public class Encrypt {
 
 	final static Random rand = new Random();
 
-	//-----------------------General-------------------------
 
+
+	//-----------------------General-------------------------
 	/**
 	 * General method to encode a message using a key, you can choose the method you want to use to encode.
 	 * @param message the message to encode already cleaned
@@ -27,7 +28,6 @@ public class Encrypt {
 	 */
 	public static String encrypt(String message, String key, int type) {
 		// TODO: COMPLETE THIS METHOD
-
 		byte[] plainText = Helper.stringToBytes(message);
 		byte[] byteKey = Helper.stringToBytes(key);
 
@@ -57,7 +57,6 @@ public class Encrypt {
 
 
 	//-----------------------Caesar-------------------------
-	
 	/**
 	 * Method to encode a byte array message using a single character key
 	 * the key is simply added to each byte of the original message
@@ -82,7 +81,8 @@ public class Encrypt {
 		
 		return cipherText; // TODO: to be modified
 	}
-	
+
+
 	/**
 	 * Method to encode a byte array message  using a single character key
 	 * the key is simply added  to each byte of the original message
@@ -96,8 +96,9 @@ public class Encrypt {
 		return caesar(plainText, key, false); // TODO: to be modified
 	}
 
+
+
 	//-----------------------XOR-------------------------
-	
 	/**
 	 * Method to encode a byte array using a XOR with a single byte long key
 	 * @param plainText the byte array representing the string to encode
@@ -121,6 +122,7 @@ public class Encrypt {
 		return cipherText; // TODO: to be modified
 	}
 
+
 	/**
 	 * Method to encode a byte array using a XOR with a single byte long key
 	 * spaces are not encoded
@@ -135,7 +137,6 @@ public class Encrypt {
 
 
 	//-----------------------Vigenere-------------------------
-	
 	/**
 	 * Method to encode a byte array using a byte array keyword
 	 * The keyword is repeated along the message to encode
@@ -156,15 +157,18 @@ public class Encrypt {
 				cipherText[i] = SPACE;
 			} else {
 				cipherText[i] = (byte) (plainText[i] + keyword[currentKey]);
-				currentKey++;
+				++currentKey;
 
-				if(currentKey >= keyword.length) currentKey = 0;
+				if(currentKey >= keyword.length){
+					currentKey = 0;
+				}
 			}
 		}
 
 		return cipherText; // TODO: to be modified
 	}
-	
+
+
 	/**
 	 * Method to encode a byte array using a byte array keyword
 	 * The keyword is repeated along the message to encode
@@ -182,7 +186,6 @@ public class Encrypt {
 	
 	
 	//-----------------------One Time Pad-------------------------
-	
 	/**
 	 * Method to encode a byte array using a one time pad of the same length.
 	 *  The method  XOR them together.
@@ -202,12 +205,10 @@ public class Encrypt {
 
 		return cipherText; // TODO: to be modified
 	}
-	
-	
+
 	
 	
 	//-----------------------Basic CBC-------------------------
-	
 	/**
 	 * Method applying a basic chain block counter of XOR without encryption method. Encodes spaces.
 	 * @param plainText the byte array representing the string to encode
@@ -227,11 +228,8 @@ public class Encrypt {
 		}
 
 		//Compute blocks number
-		if(plainText.length % blockSize != 0) {
-			blocksNumber = plainText.length / blockSize + 1;
-		} else {
-			blocksNumber = plainText.length / blockSize;
-		}
+		blocksNumber = plainText.length / blockSize +
+				((plainText.length % blockSize == 0) ? 0 : 1);
 
 		//Fill the cipher text block by block
 		byte[] cipherText = new byte[plainText.length];
@@ -240,7 +238,8 @@ public class Encrypt {
 				lastBlockSize = plainText.length - currentBlock * blockSize;
 			}
 
-			for (int i = currentBlock * blockSize; i < (currentBlock + 1) * blockSize - (blockSize - lastBlockSize); ++i) {
+			for (int i = currentBlock * blockSize; i < (currentBlock + 1) * blockSize -
+					(blockSize - lastBlockSize); ++i) {
 				cipherText[i] = (byte) (plainText[i] ^ copyPad[i - (currentBlock * blockSize)]);
 
 				copyPad[i - (currentBlock * blockSize)] = cipherText[i];
@@ -258,16 +257,14 @@ public class Encrypt {
 	 */
 	public static byte[] generatePad(int size) {
 		// TODO: COMPLETE THIS METHOD
+		assert (size > 0);
 
-		if (size > 0){
-			byte[] pad = new byte[size];
-			for (int i = 0; i < size; ++i) {
-				int value = rand.nextInt();
-				pad[i] = (byte) value;
-			}
-			return pad;
-		} else {
-			return null; // TODO: to be modified
+		byte[] pad = new byte[size];
+
+		for (int i = 0; i < size; ++i) {
+			int value = rand.nextInt();
+			pad[i] = (byte) value;
 		}
+		return pad;
 	}
 }
