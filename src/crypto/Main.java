@@ -20,13 +20,14 @@ public class Main {
 		String key1 = "2cF%5";
 		String key2 = "abcdefghij";
 		String key3 = "f4[%&ji!è";
+		String key4 = "e53r5";
 
 		//------------------------SHELL----------------------------
 		//Bonus.shell();
 
 		//------------------------TESTS COMPLETS----------------------------
 		System.out.println("-------------------- TEST NO 1 --------------------");
-		overallGeneralTest(message4, key1);
+		overallGeneralTest(message1, key4);
 
 		/*System.out.println("-------------------- TEST NO 2 --------------------");
 		overallGeneralTest(message1, key2);*/
@@ -69,17 +70,17 @@ public class Main {
 		/*testCaesar(messageBytes, keyBytes[0]);
 		System.out.println();*/
 
-		/*// VIGENERE
+		// VIGENERE
 		testVigenere(messageBytes, keyBytes);
-		System.out.println();*/
+		System.out.println();
 
 		/*// XOR
 		testXOR(messageBytes, keyBytes[0]);
 		System.out.println();*/
 
-		// ONE TIME PAD
+		/*// ONE TIME PAD
 		testOneTime(messageBytes);
-		System.out.println();
+		System.out.println();*/
 
 		// CBC
 		/*testCBC(messageBytes, keyBytes);
@@ -203,12 +204,14 @@ public class Main {
 
 		byte[] pad = Encrypt.generatePad(string.length);
 		System.out.println("---- PAD ----");
+		System.out.println(pad.length);
 		System.out.println(bytesToString(pad));
 		System.out.println("--------");
 
 		//Encoding
 		byte[] result = Encrypt.oneTimePad(string, pad);
 		String s = bytesToString(result);
+		System.out.println(result.length);
 		System.out.print("Encoded : ");
 		System.out.println(s);
 	}
