@@ -15,18 +15,18 @@ public class Main {
 		String message1 = Helper.readStringFromFile("text_one.txt");
 		String message2 = Helper.readStringFromFile("text_two.txt");
 		String message3 = Helper.readStringFromFile("text_three.txt");
+		String message4 = "salut mec comment ça va ? bien trql c'est chill, et toi ?";
 
 		String key1 = "2cF%5";
 		String key2 = "abcdefghij";
 		String key3 = "f4[%&ji!è";
 
 		//------------------------SHELL----------------------------
-		Bonus.shell();
+		//Bonus.shell();
 
 		//------------------------TESTS COMPLETS----------------------------
-
-		/*System.out.println("-------------------- TEST NO 1 --------------------");
-		overallGeneralTest(message1, key1);*/
+		System.out.println("-------------------- TEST NO 1 --------------------");
+		overallGeneralTest(message4, key1);
 
 		/*System.out.println("-------------------- TEST NO 2 --------------------");
 		overallGeneralTest(message1, key2);*/
@@ -34,7 +34,7 @@ public class Main {
 		/*System.out.println("-------------------- TEST NO 3 --------------------");
 		overallGeneralTest(message1, key3);
 
-		System.out.println("-------------------- TEST NO 4 --------------------");
+		/*System.out.println("-------------------- TEST NO 4 --------------------");
 		overallGeneralTest(message2, key1);
 
 		System.out.println("-------------------- TEST NO 5 --------------------");
@@ -66,12 +66,12 @@ public class Main {
 		System.out.println();
 
 		// CAESAR
-		testCaesar(messageBytes, keyBytes[0]);
-		System.out.println();
+		/*testCaesar(messageBytes, keyBytes[0]);
+		System.out.println();*/
 
-		// VIGENERE
+		/*// VIGENERE
 		testVigenere(messageBytes, keyBytes);
-		System.out.println();
+		System.out.println();*/
 
 		/*// XOR
 		testXOR(messageBytes, keyBytes[0]);
@@ -82,22 +82,22 @@ public class Main {
 		System.out.println();
 
 		// CBC
-		testCBC(messageBytes, keyBytes);
-		System.out.println();
+		/*testCBC(messageBytes, keyBytes);
+		System.out.println();*/
 
 		// CBC BONUS WITH CAESAR
-		testCBCBonusWithCaesar(messageBytes, keyBytes, (byte) 1);
-		System.out.println();
+		/*testCBCBonusWithCaesar(messageBytes, keyBytes, (byte) 1);
+		System.out.println();*/
 
 		// CBC BONUS WITH XOR
-		testCBCBonusWithXor(messageBytes, keyBytes, keyBytes[0]);
-		System.out.println();
+		/*testCBCBonusWithXor(messageBytes, keyBytes, keyBytes[0]);
+		System.out.println();*/
 
-		//BREAK CIPHER
+		/*//BREAK CIPHER
 		testBreakCipher(Helper.bytesToString(Encrypt.caesar(messageBytes, keyBytes[0])), 0);
 		testBreakCipher(Helper.bytesToString(Encrypt.vigenere(messageBytes, keyBytes)), 1);
 		//testBreakCipher(Helper.bytesToString(Encrypt.xor(messageBytes, keyBytes[0])), 2);
-		testBreakCipher(Helper.bytesToString(Encrypt.vigenere(messageBytes, keyBytes)), 3);
+		testBreakCipher(Helper.bytesToString(Encrypt.vigenere(messageBytes, keyBytes)), 3);*/
 
 		System.out.println();
 		System.out.println();
@@ -202,6 +202,7 @@ public class Main {
 		System.out.println("------One Time Pad------");
 
 		byte[] pad = Encrypt.generatePad(string.length);
+		System.out.println("---- PAD ----");
 		System.out.println(bytesToString(pad));
 		System.out.println("--------");
 

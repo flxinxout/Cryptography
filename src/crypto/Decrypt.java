@@ -243,10 +243,15 @@ public class Decrypt {
 	public static byte[] vigenereWithFrequencies(byte[] cipher) {
 		//TODO : COMPLETE THIS METHOD
 		List<Byte> cleanedText = removeSpaces(cipher);
+		byte[] test = new byte[cleanedText.size()];
+		for(int i = 0; i < cleanedText.size(); i++) {
+			test[i] = cleanedText.get(i);
+		}
 
 		int keyLength = vigenereFindKeyLength(cleanedText);
 
 		byte[] key = vigenereFindKey(cleanedText, keyLength);
+		System.out.println(Helper.bytesToString(key));
 
 		return Encrypt.vigenere(cipher, key); //TODO: to be modified
 	}
@@ -283,7 +288,8 @@ public class Decrypt {
 
 		List<Integer> potentialKeyLengths = findPotentialKeyLength(coincidences);
 
-		return getKeyLength(potentialKeyLengths); //TODO: to be modified
+		int key = getKeyLength(potentialKeyLengths);
+		return key; //TODO: to be modified
 	}
 
 
