@@ -7,6 +7,13 @@ public class Bonus {
     private static Scanner input = new Scanner (System.in);
 
     //-------------HELPER METHODS----------------
+    /**
+     * Method that asks the user to enter an integer with a specific message
+     * @param message the message before entering the integer
+     * @param infBound the inferior bound
+     * @param supBound the superior bound
+     * @return the entered integer
+     */
     public static int enterInt(String message, int infBound, int supBound) {
         int number;
         boolean correct;
@@ -27,6 +34,12 @@ public class Bonus {
         return number;
     }
 
+
+    /**
+     * Method that asks the user to enter a string with a specific message
+     * @param message the message before entering the integer
+     * @return the entered string
+     */
     public static String enterString(String message) {
         String answer;
         System.out.println(message);
@@ -35,6 +48,12 @@ public class Bonus {
         return answer;
     }
 
+    /**
+     * Method that asks the user to enter an string with a specific message
+     * @param message the message before entering the integer
+     * @param answers possible answers
+     * @return the entered string
+     */
     public static String enterString(String message, String... answers) {
         String answer;
         boolean correct = false;
@@ -66,6 +85,13 @@ public class Bonus {
         return answer;
     }
 
+
+    /**
+     * Method that asks the user to enter an string with a specific message
+     * @param message the message before entering the integer
+     * @param minSize minimum size of the string
+     * @return the entered string
+     */
     public static String enterString(String message, int minSize) {
         String answer;
         do {
@@ -81,6 +107,7 @@ public class Bonus {
         return answer;
     }
 
+
     //-------------EXTENDED CBC----------------
     /**
      * Method to encode a byte array message using a single character key
@@ -92,7 +119,6 @@ public class Bonus {
      */
     public static byte[] caesarWithoutSpace(byte[] plainText, byte key) {
         assert(plainText != null);
-        // TODO: COMPLETE THIS METHOD
 
         byte[] cipherText = new byte[plainText.length];
 
@@ -100,97 +126,7 @@ public class Bonus {
             cipherText[i] = (byte) (plainText[i] + key);
         }
 
-        return cipherText; // TODO: to be modified
-    }
-
-
-    /**
-     * Method to encode a byte array (AND THE SPACES) using a XOR with a single byte long key
-     * @param plainText the byte array representing the string to encode
-     * @param key the byte we will use to XOR
-     * @return an encoded byte array
-     */
-    public static byte[] xorWithoutSpace(byte[] plainText, byte key) {
-        // TODO: COMPLETE THIS METHOD
-
-        byte[] cipherText = new byte[plainText.length];
-
-        for(int i = 0; i < plainText.length; ++i) {
-            cipherText[i] = (byte) (plainText[i] ^ key);
-        }
-
-        return cipherText; // TODO: to be modified
-    }
-
-
-    /**
-     * Method used to decode a String encoded following the CBC pattern and the CAESAR encryption
-     * @param cipher the byte array representing the encoded text
-     * @param iv the pad of size BLOCKSIZE we use to start the chain encoding
-     * @return the clear text
-     */
-    public static byte[] decryptCBCBonusWithCaesar(byte[] cipher, byte[] iv, byte key) {
-        //TODO : COMPLETE THIS METHOD
-        byte[] cbc = caesarWithoutSpace(cipher, (byte) -key);
-        byte[] plainText = Decrypt.decryptCBC(cbc, iv);
-
-        return plainText;
-    }
-
-
-    /**
-     * Method used to decode a String encoded following the CBC pattern and the XOR encryption
-     * @param cipher the byte array representing the encoded text
-     * @param iv the pad of size BLOCKSIZE we use to start the chain encoding
-     * @return the clear text
-     */
-    public static byte[][] decryptCBCBonusWithXor(byte[] cipher, byte[] iv) {
-        //TODO : COMPLETE THIS METHOD
-
-        int blockSize = iv.length;
-        int lastBlockSize = blockSize;
-        int blocksNumber;
-
-        // Cipher Text without caesar encryption
-        byte[][] cbcWithoutXor;
-
-        // Plain Text decrypted
-        byte[][] decrypted = new byte[Decrypt.ALPHABETSIZE][cipher.length];
-
-        // Fill the new pad to have a new adress
-        byte[] copyPad = new byte[blockSize];
-        for (int i = 0; i < blockSize; ++i) {
-            copyPad[i] = iv[i];
-        }
-
-        // Decrypt the caesar encryption
-        cbcWithoutXor = Decrypt.xorBruteForce(cipher);
-
-        //Compute the number of blocks
-        blocksNumber = cipher.length / blockSize +
-                ((cipher.length % blockSize == 0) ? 0 : 1);
-
-        //For the different lines of the 2 dimensions array
-        //Decode each line
-        for(int row = 0; row < cbcWithoutXor.length; ++row) {
-
-            byte[] lineToDecrypt = new byte[cbcWithoutXor[row].length];
-
-            for (int currentBlock = 0; currentBlock < blocksNumber; ++currentBlock) {
-                if (lineToDecrypt.length % blockSize != 0 && (currentBlock + 1) * blockSize > lineToDecrypt.length) {
-                    lastBlockSize = lineToDecrypt.length - currentBlock * blockSize;
-                }
-
-                for (int i = currentBlock * blockSize; i < (currentBlock + 1) * blockSize - (blockSize - lastBlockSize); ++i) {
-                    decrypted[row][i] = (byte) (lineToDecrypt[i] ^ copyPad[i - (currentBlock * blockSize)]);
-
-                    copyPad[i - (currentBlock * blockSize)] = lineToDecrypt[i];
-                }
-            }
-
-        }
-
-        return decrypted; //TODO: to be modified
+        return cipherText;
     }
 
 
@@ -203,24 +139,106 @@ public class Bonus {
      */
     public static byte[] cbcBonusWithCaesar(byte[] plainText, byte[] iv, byte key) {
         byte[] cbc = Encrypt.cbc(plainText, iv);
-        byte[] cipher = caesarWithoutSpace(cbc, key);
-
-        return cipher;
+        return caesarWithoutSpace(cbc, key);
     }
 
 
     /**
-     * Method applying a basic chain block counter of XOR WITH encryption method, here XOR. Encodes spaces.
+     * Method used to decode a String encoded following the CBC pattern and the CAESAR encryption
+     * @param cipher the byte array representing the encoded text
+     * @param iv the pad of size BLOCKSIZE we use to start the chain encoding
+     * @return the clear text
+     */
+    public static byte[] decryptCBCBonusWithCaesar(byte[] cipher, byte[] iv, byte key) {
+        byte[] cbc = caesarWithoutSpace(cipher, (byte) -key);
+        return Decrypt.decryptCBC(cbc, iv);
+    }
+
+
+    /**
+     * Method applying a basic propagating chain block counter of XOR. Encodes spaces.
      * @param plainText the byte array representing the string to encode
      * @param iv the pad of size BLOCKSIZE we use to start the chain encoding
-     * @param key is the key for the caesar encryption
      * @return an encoded byte array
      */
-    public static byte[] cbcBonusWithXor(byte[] plainText, byte[] iv, byte key) {
-        byte[] cbc = Encrypt.cbc(plainText, iv);
-        byte[] cipher = xorWithoutSpace(cbc, key);
+    public static byte[] PCBC(byte[] plainText, byte[] iv) {
+        int textSize = plainText.length;
+        int blockSize = iv.length;
+        int lastBlockSize = blockSize;
+        int blocksNumber;
 
-        return cipher;
+        // Fill new pad to have a new address
+        byte[] copyPad = new byte[blockSize];
+        for (int i = 0; i < blockSize; i++) {
+            copyPad[i] = iv[i];
+        }
+
+        //Compute blocks number
+        blocksNumber = textSize / blockSize +
+                ((textSize % blockSize == 0) ? 0 : 1);
+
+        //Fill the cipher text block by block
+        byte[] cipherText = new byte[textSize];
+        for (int currentBlock = 0; currentBlock < blocksNumber; ++currentBlock) {
+            if ((currentBlock + 1) * blockSize > textSize) {
+                lastBlockSize = textSize - currentBlock * blockSize;
+            }
+
+            for (int i = currentBlock * blockSize; i < (currentBlock + 1) * blockSize -
+                    (blockSize - lastBlockSize); ++i) {
+                cipherText[i] = (byte) (plainText[i] ^ copyPad[i - (currentBlock * blockSize)]);
+
+                int index = i - (currentBlock * blockSize);
+                byte[] key = new byte[blockSize];
+                key[index] = (byte) (cipherText[i] ^ plainText[i]);
+                copyPad[index] = key[index];
+            }
+        }
+
+        return cipherText;
+    }
+
+
+    /**
+     * Method used to decode a String encoded following the PCBC (propagating CBC) pattern
+     * @param cipher the byte array representing the encoded text
+     * @param iv the pad of size BLOCKSIZE we use to start the chain encoding
+     * @return the clear text
+     */
+    public static byte[] decryptPCBC(byte[] cipher, byte[] iv) {
+        int textSize = cipher.length;
+        int blockSize = iv.length;
+        int lastBlockSize = blockSize;
+        int blocksNumber;
+
+        // Fill the new pad to have a new adress
+        byte[] copyPad = new byte[blockSize];
+        for (int i = 0; i < blockSize; ++i) {
+            copyPad[i] = iv[i];
+        }
+
+        //Compute the number of blocks
+        blocksNumber = textSize / blockSize +
+                ((textSize % blockSize == 0) ? 0 : 1);
+
+        //Fill the plain text block by block
+        byte[] plainText = new byte[textSize];
+        for (int currentBlock = 0; currentBlock < blocksNumber; ++currentBlock) {
+            if (textSize % blockSize != 0 && (currentBlock + 1) * blockSize > textSize) {
+                lastBlockSize = textSize - currentBlock * blockSize;
+            }
+
+            for (int i = currentBlock * blockSize; i < (currentBlock + 1) * blockSize - (blockSize - lastBlockSize); ++i) {
+                plainText[i] = (byte) (cipher[i] ^ copyPad[i - (currentBlock * blockSize)]);
+
+                int index = i - (currentBlock * blockSize);
+                byte[] key = new byte[blockSize];
+                key[index] = (byte) (plainText[i] ^ cipher[i]);
+                copyPad[index] = key[index];
+            }
+        }
+
+        return plainText;
     }
 
 
@@ -238,7 +256,7 @@ public class Bonus {
                 "de Giovanni Ranieri et Dylan Vairoli !");
         System.out.println("====================================================================================================");
 
-        String aide = enterString("\nSi vous avez besoin d'assistance, tapez 'aide'");
+        String aide = enterString("\nSi vous avez besoin d'assistance, tapez 'aide', sinon cliquez sur enter.");
 
         if (aide.equals("aide")){
             System.out.println("\n----- Aide -----\n" +

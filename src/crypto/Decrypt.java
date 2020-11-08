@@ -27,18 +27,17 @@ public class Decrypt {
 	 * @return the decoded string or the original encoded message if type is not in the list above.
 	 */
 	public static String breakCipher(String cipher, int type) {
-		//TODO : COMPLETE THIS METHOD
 		byte[] cipherByte = Helper.stringToBytes(cipher);
 		String result;
 
 		if (type == CAESAR) {
 			byte key = caesarWithFrequencies(cipherByte);
 			byte[] byteResult = Encrypt.caesar(cipherByte, key);
-			result = Helper.bytesToString(byteResult);
+			result = bytesToString(byteResult);
 		}
 		else if (type == VIGENERE){
 			byte[] byteResult = vigenereWithFrequencies(cipherByte);
-			result = Helper.bytesToString(byteResult);
+			result = bytesToString(byteResult);
 		}
 		else if (type == XOR){
 			byte[][] bruteForceResult = xorBruteForce(cipherByte);
@@ -48,7 +47,7 @@ public class Decrypt {
 			result = cipher;
 		}
 
-		return result; //TODO: to be modified
+		return result;
 	}
 	
 	
@@ -57,7 +56,6 @@ public class Decrypt {
 	 * @param bruteForceResult a 2D byte array containing the result of a brute force method
 	 */
 	public static String arrayToString(byte[][] bruteForceResult) {
-		//TODO : COMPLETE THIS METHOD
 		String message = "";
 
 		for(int row = 0; row < bruteForceResult.length; ++row) {
@@ -70,7 +68,7 @@ public class Decrypt {
 			message += System.lineSeparator();
 		}
 		
-		return message; //TODO: to be modified
+		return message;
 	}
 
 
@@ -83,8 +81,6 @@ public class Decrypt {
 	 * @return a 2D byte array containing all the possibilities
 	 */
 	public static byte[][] caesarBruteForce(byte[] cipher) {
-		//TODO : COMPLETE THIS METHOD
-
 		byte[][] decodedText = new byte[ALPHABETSIZE][cipher.length];
 
 		for(int row = 1; row < ALPHABETSIZE; ++row) {
@@ -93,7 +89,7 @@ public class Decrypt {
 			}
 		}
 
-		return decodedText; //TODO: to be modified
+		return decodedText;
 	}	
 	
 	
@@ -103,10 +99,8 @@ public class Decrypt {
 	 * @return the decoding key
 	 */
 	public static byte caesarWithFrequencies(byte[] cipherText) {
-		//TODO : COMPLETE THIS METHOD
-
 		float[] frequencies = computeFrequencies(cipherText);
-		return caesarFindKey(frequencies); //TODO: to be modified
+		return caesarFindKey(frequencies);
 	}
 
 
@@ -116,7 +110,6 @@ public class Decrypt {
 	 * @return the character frequencies as an array of float
 	 */
 	public static float[] computeFrequencies(byte[] cipherText) {
-		//TODO : COMPLETE THIS METHOD
 		int charactersButSpace = 0;
 		float[] charactersFrequencies = new float[ALPHABETSIZE];
 
@@ -142,30 +135,7 @@ public class Decrypt {
 			}
 		}
 
-		return charactersFrequencies; //TODO: to be modified
-	}
-
-
-	/**
-	 * TEST ONLY Method that displays in the console the frequency of each
-	 * character of a frequencies array
-	 * @param frequenciesArray the frequencies array
-	 */
-	public static void displayFrequencies(float[] frequenciesArray){
-		//Keep track of how many letters have been used (frequency != 0) (except spaces)
-		int usedLetters = 0;
-
-		System.out.println("Frequencies :");
-
-		for (int i = 0; i < frequenciesArray.length; i++) {
-			byte[] letter = {(byte) i};
-			System.out.println(Helper.bytesToString(letter) + " " + frequenciesArray[i]);
-			if(frequenciesArray[i] != 0.0) {
-				usedLetters++;
-			}
-		}
-
-		System.out.println("Number of used letters: " + usedLetters);
+		return charactersFrequencies;
 	}
 
 
@@ -175,8 +145,6 @@ public class Decrypt {
 	 * @return the decoding key
 	 */
 	public static byte caesarFindKey(float[] charFrequencies) {
-		//TODO : COMPLETE THIS METHOD
-
 		double maxScalarProduct = 0.0;
 		double scalarProd;
 		int maxIndex = 0;
@@ -186,7 +154,6 @@ public class Decrypt {
 			scalarProd = 0;
 
 			for(int english = 0; english < ENGLISHFREQUENCIES.length; ++english) {
-
 				//Last index (in cipher) of the current comparison
 				int sum = (cipher + english);
 				if(sum > 255) {
@@ -204,7 +171,7 @@ public class Decrypt {
 		}
 
 		// The key which should be used to decrypt the message
-		return (byte) -(maxIndex - 96); //TODO: to be modified
+		return (byte) -(maxIndex - 96);
 	}
 
 
@@ -217,8 +184,6 @@ public class Decrypt {
 	 * @return the array of possibilities for the clear text
 	 */
 	public static byte[][] xorBruteForce(byte[] cipher) {
-		//TODO : COMPLETE THIS METHOD
-
 		byte[][] decodedText = new byte[ALPHABETSIZE][cipher.length];
 
 		for(int i = 1; i < ALPHABETSIZE; ++i) {
@@ -227,7 +192,7 @@ public class Decrypt {
 			}
 		}
 
-		return decodedText; //TODO: to be modified
+		return decodedText;
 	}
 
 
@@ -241,15 +206,13 @@ public class Decrypt {
 	 * @return the byte encoding of the clear text
 	 */
 	public static byte[] vigenereWithFrequencies(byte[] cipher) {
-		//TODO : COMPLETE THIS METHOD
 		List<Byte> cleanedText = removeSpaces(cipher);
 
 		int keyLength = vigenereFindKeyLength(cleanedText);
 
 		byte[] key = vigenereFindKey(cleanedText, keyLength);
-		//System.out.println(Helper.bytesToString(key));
 
-		return Encrypt.vigenere(cipher, key); //TODO: to be modified
+		return Encrypt.vigenere(cipher, key);
 	}
 	
 
@@ -259,8 +222,6 @@ public class Decrypt {
 	 * @return a List of bytes without spaces
 	 */
 	public static List<Byte> removeSpaces(byte[] array){
-		//TODO : COMPLETE THIS METHOD
-
 		List<Byte> list = new ArrayList<>();
 
 		for (int i = 0; i < array.length; ++i) {
@@ -279,13 +240,11 @@ public class Decrypt {
 	 * @return the length of the key
 	 */
 	public static int vigenereFindKeyLength(List<Byte> cipher) {
-		//TODO : COMPLETE THIS METHOD
 		int[] coincidences = findCoincidences(cipher);
 
 		List<Integer> potentialKeyLengths = findPotentialKeyLength(coincidences);
 
-		int key = getKeyLength(potentialKeyLengths);
-		return key; //TODO: to be modified
+		return getKeyLength(potentialKeyLengths);
 	}
 
 
@@ -296,8 +255,6 @@ public class Decrypt {
 	 * @return an array of the coincidences in the encoded text
 	 */
 	public static int[] findCoincidences(List<Byte> cipher) {
-		//TODO : COMPLETE THIS METHOD
-
 		/* Array that stores the number of coincidences for each shift. Its indexes
 		 * represent the number of shifts to the right (0 = 1 shift, 1 = 2 shift, ...)
 		 */
@@ -305,14 +262,14 @@ public class Decrypt {
 
 		//Iterates through the cipher array and add the coincidences to their array
 		for (int shift = 1; shift < cipher.size(); ++shift) {
-			for (int i = shift; i < cipher.size(); ++i) {
+			for (int i = shift; i < cipher.size() - shift; ++i) {
 				if (cipher.get(i) == cipher.get(i - shift)){
 					coincidences[shift-1] += 1;
 				}
 			}
 		}
 
-		return coincidences; //TODO: to be modified
+		return coincidences;
 	}
 
 
@@ -323,8 +280,6 @@ public class Decrypt {
 	 * @return the potential lengths of the key
 	 */
 	public static List<Integer> findPotentialKeyLength(int[] coincidences) {
-		//TODO : COMPLETE THIS METHOD
-
 		//List containing the indexes (of coincidences array) of the maxima
 		List<Integer> maximaIndex = new ArrayList<>();
 
@@ -345,7 +300,7 @@ public class Decrypt {
 			}
 		}
 
-		return maximaIndex; //TODO: to be modified
+		return maximaIndex;
 	}
 
 
@@ -356,8 +311,6 @@ public class Decrypt {
 	 * @return the length of the key
 	 */
 	public static int getKeyLength(List<Integer> maximaIndex) {
-		//TODO : COMPLETE THIS METHOD
-
 		//Map: Key: distances, Values: occurrences
 		Map<Integer, Integer> distances = new HashMap<>();
 
@@ -367,8 +320,7 @@ public class Decrypt {
 
 			if(!distances.containsKey(thisDistance)){
 				distances.put(thisDistance, 1);
-			}
-			else{
+			} else {
 				distances.replace(thisDistance, (distances.get(thisDistance) + 1));
 			}
 		}
@@ -379,13 +331,13 @@ public class Decrypt {
 
 		for (int key : distances.keySet()) {
 			if (distances.get(key) > maxOccurrence ||
-					(distances.get(key) == maxOccurrence && key > keyLength)){
+					(distances.get(key) == maxOccurrence && key > keyLength)) {
 				maxOccurrence = distances.get(key);
 				keyLength = key;
 			}
 		}
 
-		return keyLength; //TODO: to be modified
+		return keyLength;
 	}
 
 
@@ -397,8 +349,6 @@ public class Decrypt {
 	 * @return the inverse key to decode the Vigenere cipher text
 	 */
 	public static byte[] vigenereFindKey(List<Byte> cipher, int keyLength) {
-		//TODO : COMPLETE THIS METHOD
-
 		byte[] key = new byte[keyLength];
 
 		for (int i = 0; i < keyLength; ++i) {
@@ -408,7 +358,6 @@ public class Decrypt {
 				part.add(cipher.get(j));
 			}
 
-			//C'EST PAS LA MEILLEURE TECHNIQUE JE PENSE, A REFAIRE PEUT-ETRE
 			//Convert from list to array
 			byte[] arrayPart = new byte[part.size()];
 			for (int j = 0; j < part.size(); ++j) {
@@ -419,7 +368,7 @@ public class Decrypt {
 			key[i] = thisKey;
 		}
 
-		return key; //TODO: to be modified
+		return key;
 	}
 	
 
@@ -432,8 +381,7 @@ public class Decrypt {
 	 * @return the clear text
 	 */
 	public static byte[] decryptCBC(byte[] cipher, byte[] iv) {
-		//TODO : COMPLETE THIS METHOD
-
+		int textSize = cipher.length;
 		int blockSize = iv.length;
 		int lastBlockSize = blockSize;
 		int blocksNumber;
@@ -445,14 +393,14 @@ public class Decrypt {
 		}
 
 		//Compute the number of blocks
-		blocksNumber = cipher.length / blockSize +
-				((cipher.length % blockSize == 0) ? 0 : 1);
+		blocksNumber = textSize / blockSize +
+				((textSize % blockSize == 0) ? 0 : 1);
 
 		//Fill the plain text block by block
-		byte[] plainText = new byte[cipher.length];
+		byte[] plainText = new byte[textSize];
 		for (int currentBlock = 0; currentBlock < blocksNumber; ++currentBlock) {
-			if (cipher.length % blockSize != 0 && (currentBlock + 1) * blockSize > cipher.length) {
-				lastBlockSize = cipher.length - currentBlock * blockSize;
+			if (textSize % blockSize != 0 && (currentBlock + 1) * blockSize > textSize) {
+				lastBlockSize = textSize - currentBlock * blockSize;
 			}
 
 			for (int i = currentBlock * blockSize; i < (currentBlock + 1) * blockSize - (blockSize - lastBlockSize); ++i) {
@@ -462,6 +410,6 @@ public class Decrypt {
 			}
 		}
 
-		return plainText; //TODO: to be modified
+		return plainText;
 	}
 }

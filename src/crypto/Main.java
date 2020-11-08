@@ -20,14 +20,14 @@ public class Main {
 		String key1 = "2cF%5";
 		String key2 = "abcdefghij";
 		String key3 = "f4[%&ji!è";
-		String key4 = "e53r5";
+		String key4 = "e53r5t";
 
 		//------------------------SHELL----------------------------
 		//Bonus.shell();
 
 		//------------------------TESTS COMPLETS----------------------------
 		System.out.println("-------------------- TEST NO 1 --------------------");
-		overallGeneralTest(message1, key4);
+		overallGeneralTest(message1, key1);
 
 		/*System.out.println("-------------------- TEST NO 2 --------------------");
 		overallGeneralTest(message1, key2);*/
@@ -67,8 +67,8 @@ public class Main {
 		System.out.println();
 
 		// CAESAR
-		/*testCaesar(messageBytes, keyBytes[0]);
-		System.out.println();*/
+		testCaesar(messageBytes, keyBytes[0]);
+		System.out.println();
 
 		// VIGENERE
 		testVigenere(messageBytes, keyBytes);
@@ -78,27 +78,27 @@ public class Main {
 		testXOR(messageBytes, keyBytes[0]);
 		System.out.println();*/
 
-		/*// ONE TIME PAD
+		// ONE TIME PAD
 		testOneTime(messageBytes);
-		System.out.println();*/
+		System.out.println();
 
 		// CBC
-		/*testCBC(messageBytes, keyBytes);
-		System.out.println();*/
+		testCBC(messageBytes, keyBytes);
+		System.out.println();
 
 		// CBC BONUS WITH CAESAR
-		/*testCBCBonusWithCaesar(messageBytes, keyBytes, (byte) 1);
-		System.out.println();*/
+		testCBCBonusWithCaesar(messageBytes, keyBytes, (byte) 1);
+		System.out.println();
 
-		// CBC BONUS WITH XOR
-		/*testCBCBonusWithXor(messageBytes, keyBytes, keyBytes[0]);
-		System.out.println();*/
+		// PCBC BONUS
+		testPCBCBonus(messageBytes, keyBytes);
+		System.out.println();
 
-		/*//BREAK CIPHER
+		//BREAK CIPHER
 		testBreakCipher(Helper.bytesToString(Encrypt.caesar(messageBytes, keyBytes[0])), 0);
 		testBreakCipher(Helper.bytesToString(Encrypt.vigenere(messageBytes, keyBytes)), 1);
-		//testBreakCipher(Helper.bytesToString(Encrypt.xor(messageBytes, keyBytes[0])), 2);
-		testBreakCipher(Helper.bytesToString(Encrypt.vigenere(messageBytes, keyBytes)), 3);*/
+		testBreakCipher(Helper.bytesToString(Encrypt.xor(messageBytes, keyBytes[0])), 2);
+		testBreakCipher(Helper.bytesToString(Encrypt.vigenere(messageBytes, keyBytes)), 3);
 
 		System.out.println();
 		System.out.println();
@@ -246,19 +246,20 @@ public class Main {
 		System.out.println("Decoded knowing the key: " + sFD);
 	}
 
-	//Run the Encoding and Decoding using CBC BONUS pattern and XOR
-	public static void testCBCBonusWithXor(byte[] string, byte[] iv, byte key) {
-		System.out.println("------CBC BONUS XOR------");
+	//Run the Encoding and Decoding using PCBC BONUS pattern
+	public static void testPCBCBonus(byte[] string, byte[] iv) {
+		System.out.println("------PCBC BONUS------");
 
 		//Encoding
-		byte[] result = Bonus.cbcBonusWithXor(string, iv, key);
+		byte[] result = Bonus.PCBC(string, iv);
 		String s = bytesToString(result);
-		System.out.println("Encoded : " + s);
+		System.out.println("Encoded : ");
+		System.out.println(s);
 		System.out.println();
 
 		//Decoding with the key
-		byte[][] plainText = Bonus.decryptCBCBonusWithXor(result, iv);
-		String sFD = Decrypt.arrayToString(plainText);
+		byte[] plainText = Bonus.decryptPCBC(result, iv);
+		String sFD = bytesToString(plainText);
 		System.out.println("Decoded knowing the key: " + sFD);
 	}
 }
